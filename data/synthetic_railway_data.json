@@ -575,6 +575,33 @@
         "speed_restriction_penalty": 0.0
       },
       "rationale": "Priority 51.5/100: Driven by critical asset condition, mandatory statutory inspection cycle, located on high-density line (Prayagraj Jn - Subedarganj (UP))."
+    },
+    {
+      "task_id": "TASK_EMG_9843",
+      "department": "ENGINEERING",
+      "source_system": "TMS_EMERGENCY_FEED",
+      "section_id": "SEC_PRG_CNB_02",
+      "asset_id": "RAIL_KM_1018_UP",
+      "title": "Immediate Rail Fracture & Weld Flaw Detected",
+      "description": "Ultrasonic flaw testing (USFD) detected critical weld separation requiring emergency fish-plating and tamping.",
+      "severity": "EMERGENCY",
+      "min_duration_minutes": 60,
+      "reported_date": "2026-10-24 22:07",
+      "due_date": "2026-10-24 22:07",
+      "days_overdue": 3,
+      "is_statutory": true,
+      "requires_power_block": false,
+      "requires_traffic_block": true,
+      "speed_restriction": "20 kmph emergency restriction",
+      "priority_score": 88.0,
+      "score_factors": {
+        "safety_severity": 40.0,
+        "overdue_days": 15.0,
+        "corridor_density": 8.0,
+        "statutory_compliance": 15.0,
+        "speed_restriction_penalty": 10.0
+      },
+      "rationale": "Priority 88.0/100: Driven by immediate safety risk (Emergency IOM), active caution order imposing 20 kmph emergency restriction delay, 3 days past regulatory due date, mandatory statutory inspection cycle, located on high-density line (SEC_PRG_CNB_02)."
     }
   ],
   "windows": [
@@ -1882,6 +1909,15 @@
       "duration_minutes": 120,
       "window_type": "MEGA_BLOCK",
       "impact_score": 0.9
+    },
+    {
+      "window_id": "WIN_ADVANCE_SEC_PRG_SFG_UP_20261024_220523",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-24 22:30",
+      "end_time": "2026-10-25 03:30",
+      "duration_minutes": 300,
+      "window_type": "MEGA_BLOCK",
+      "impact_score": 1.5
     }
   ]
 }

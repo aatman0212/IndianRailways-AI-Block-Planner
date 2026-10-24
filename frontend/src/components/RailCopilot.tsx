@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Bot,
   Send,
-  Mic,
-  MicOff,
   Clock,
   Zap,
   TrendingDown,
@@ -200,7 +198,6 @@ Click any suggestion chip below or type your instruction in plain English.`,
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const [delayImpact, setDelayImpact] = useState<DelayImpact | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -274,43 +271,6 @@ Click any suggestion chip below or type your instruction in plain English.`,
       ]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const toggleVoiceInput = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert('Speech Recognition is not supported in this browser. Please use Google Chrome or Edge.');
-      return;
-    }
-
-    if (isListening) {
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-IN';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      recognition.onerror = () => setIsListening(false);
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInput(transcript);
-        setIsListening(false);
-      };
-
-      recognition.start();
-    } catch (err) {
-      console.error('Speech recognition error:', err);
-      setIsListening(false);
     }
   };
 
@@ -467,28 +427,11 @@ Click any suggestion chip below or type your instruction in plain English.`,
           }}
           className="flex items-center gap-2"
         >
-          <button
-            type="button"
-            onClick={toggleVoiceInput}
-            title={isListening ? 'Stop listening' : 'Voice input'}
-            className={`p-2.5 rounded-xl border text-xs transition-colors cursor-pointer ${
-              isListening
-                ? 'bg-red-600 border-red-500 text-white animate-pulse'
-                : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </button>
-
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={
-              isListening
-                ? 'Listening...'
-                : 'Type a message or command (e.g. "Rajdhani 45 min late, replan" or "What does IRPWM 605 say?")'
-            }
+            placeholder='Type a message or command (e.g. "Rajdhani 45 min late, replan" or "What does IRPWM 605 say?")'
             className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
 
