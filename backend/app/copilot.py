@@ -721,6 +721,80 @@ class RailCopilotAgent:
             }
 
         # -------------------------------------------------------------
+        # Intent 0.5: Basic Math & Calculations (e.g. "2+2?", "50*4", "100/5")
+        # -------------------------------------------------------------
+        math_clean = re.sub(r"[?=\s]", "", msg_clean)
+        math_match = re.fullmatch(r"(\d+(?:\.\d+)?)([\+\-\*\/])(\d+(?:\.\d+)?)", math_clean)
+        if math_match:
+            n1 = float(math_match.group(1))
+            op = math_match.group(2)
+            n2 = float(math_match.group(3))
+            res = 0.0
+            if op == "+": res = n1 + n2
+            elif op == "-": res = n1 - n2
+            elif op == "*": res = n1 * n2
+            elif op == "/": res = n1 / n2 if n2 != 0 else 0
+            
+            res_str = f"{int(res)}" if res.is_integer() else f"{res:.2f}"
+            tools_executed.append({
+                "tool": "arithmetic_calculator",
+                "params": {"expression": f"{n1} {op} {n2}"},
+                "result": res_str,
+            })
+            reply_text = f"### Calculation Result\n\n**{n1:g} {op} {n2:g} = {res_str}**"
+            return {
+                "reply": reply_text,
+                "action_type": "CALCULATION",
+                "tools_executed": tools_executed,
+                "timestamp": datetime.now().isoformat(),
+                "current_plan_count": len(self.state.get("current_plan", [])),
+            }
+
+        # -------------------------------------------------------------
+        # Intent 0.6: Greetings & Identity
+        # -------------------------------------------------------------
+        if msg_lower in ["hi", "hello", "hey", "namaste", "greetings", "who are you"]:
+            reply_text = (
+                "### 🚂 Namaste! I am IR-Copilot\n\n"
+                "I am your AI Railway Section Controller Assistant for the **Prayagraj Division** (North Central Railway).\n\n"
+                "Here is what I can do:\n"
+                "• **Explain Block Regulations:** Citations from IRPWM, ACTM, SEM & G&SR.\n"
+                "• **Simulate & Protect Trains:** Re-schedule maintenance when passenger expresses are delayed.\n"
+                "• **Google Gemini AI Integration:** For all advanced questions, connect your Gemini API key via the button at the top!"
+            )
+            return {
+                "reply": reply_text,
+                "action_type": "GREETING",
+                "tools_executed": tools_executed,
+                "timestamp": datetime.now().isoformat(),
+                "current_plan_count": len(self.state.get("current_plan", [])),
+            }
+
+        # -------------------------------------------------------------
+        # Intent 0.7: "Why is Mail Express stopped for past 7 days?"
+        # -------------------------------------------------------------
+        if any(p in msg_lower for p in ["mail express", "express is stopped", "stopped from past 7 days", "why train stopped"]):
+            reply_text = (
+                "### 🚆 Train Movement & Regulation: Mail / Express\n\n"
+                "**1. Root Cause of Regulation:**\n"
+                "• In our corridor dataset, multiple critical track defects (emergency weld flaws and rail fracture backlog) "
+                "were flagged between **Subedarganj and Manauri (KM 1018)**.\n"
+                "• Under **G&SR 15.06 & IRPWM Para 610**, trains cannot run at full 130 km/h speed over un-repaired weld fractures. "
+                "They were subjected to caution orders or regulated to station loop lines.\n\n"
+                "**2. How the AI Optimizer Solves It:**\n"
+                "• Click **'Run AI Optimizer'** in the top header or tell me *'replan schedule'*.\n"
+                "• The CP-SAT solver bundles track and TRD teams into low-traffic night windows (01:30–04:30 AM), "
+                "resolves all backlog defects, and clears all caution orders so the Mail/Express runs at full sectional speed without delays!"
+            )
+            return {
+                "reply": reply_text,
+                "action_type": "TRAIN_REGULATION_EXPLAINED",
+                "tools_executed": tools_executed,
+                "timestamp": datetime.now().isoformat(),
+                "current_plan_count": len(self.state.get("current_plan", [])),
+            }
+
+        # -------------------------------------------------------------
         # Intent 1: "How does RAG work?" / RAG Architecture Query
         # -------------------------------------------------------------
         if any(p in msg_lower for p in ["how is the rag", "how rag works", "how does rag work", "what is rag", "explain rag", "retrieval augmented"]):
