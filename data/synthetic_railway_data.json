@@ -1911,8 +1911,26 @@
       "impact_score": 0.9
     },
     {
+      "window_id": "WIN_ADVANCE_SEC_PRG_SFG_DN_20261024_212457",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 03:30",
+      "duration_minutes": 120,
+      "window_type": "MEGA_BLOCK",
+      "impact_score": 0.9
+    },
+    {
       "window_id": "WIN_ADVANCE_SEC_PRG_SFG_UP_20261024_220523",
       "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-24 22:30",
+      "end_time": "2026-10-25 03:30",
+      "duration_minutes": 300,
+      "window_type": "MEGA_BLOCK",
+      "impact_score": 1.5
+    },
+    {
+      "window_id": "WIN_ADVANCE_SEC_PRG_SFG_DN_20261024_220523",
+      "section_id": "SEC_PRG_SFG_DN",
       "start_time": "2026-10-24 22:30",
       "end_time": "2026-10-25 03:30",
       "duration_minutes": 300,

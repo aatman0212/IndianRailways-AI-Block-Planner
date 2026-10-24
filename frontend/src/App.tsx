@@ -41,8 +41,10 @@ export const App: React.FC = () => {
   const [isBulletinModalOpen, setIsBulletinModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [optimizing, setOptimizing] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'GANTT' | 'MIMIC' | 'WHATIF' | 'TASKS' | 'COPILOT'>('GANTT');
+  const [activeTab, setActiveTab] = useState<'GANTT' | 'APPROVED' | 'MIMIC' | 'WHATIF' | 'TASKS' | 'COPILOT'>('GANTT');
   const [notification, setNotification] = useState<{ msg: string; type?: 'info' | 'alert' } | null>(null);
+
+  const approvedCount = blocks.filter((b) => b.status === 'APPROVED').length;
 
   // Live ticking IST Clock
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -158,7 +160,7 @@ export const App: React.FC = () => {
         setBlocks((prev) => prev.map((item) => (item.block_id === blockId ? b : item)));
         setSelectedBlock(null);
         showToast(
-          `✓ PERMIT SANCTIONED: Section ${b.section_id} BLOCKED from ${b.start_time} to ${b.end_time?.includes(' ') ? b.end_time.split(' ')[1] : b.end_time} IST (${b.duration_minutes}m). Caution orders dispatched.`,
+          `✓ PERMIT SANCTIONED: Section ${b.section_id} moved to Approved Section! Blocked from ${b.start_time} to ${b.end_time?.includes(' ') ? b.end_time.split(' ')[1] : b.end_time} IST (${b.duration_minutes}m). Caution orders dispatched.`,
           'info'
         );
       }
@@ -297,6 +299,23 @@ export const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('APPROVED')}
+              className={`py-2.5 px-3 font-semibold border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+                activeTab === 'APPROVED'
+                  ? 'border-emerald-500 text-white bg-emerald-500/10 rounded-t-lg'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>Sanctioned Possessions</span>
+              {approvedCount > 0 && (
+                <span className="bg-emerald-500 text-slate-950 font-extrabold text-[10px] px-1.5 py-0.2 rounded-full">
+                  {approvedCount}
+                </span>
+              )}
+            </button>
+
+            <button
               onClick={() => setActiveTab('MIMIC')}
               className={`py-2.5 px-3 font-semibold border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === 'MIMIC'
@@ -371,13 +390,25 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* Tab: Corridor Gantt Matrix */}
+        {/* Tab: Corridor Gantt Matrix (All Blocks) */}
         {activeTab === 'GANTT' && (
           <CorridorGantt
             sections={sections}
             blocks={blocks}
             onSelectBlock={(b) => setSelectedBlock(b)}
             selectedBlockId={selectedBlock?.block_id || null}
+            initialStatusFilter="ALL"
+          />
+        )}
+
+        {/* Tab: Dedicated Officially Sanctioned Possessions */}
+        {activeTab === 'APPROVED' && (
+          <CorridorGantt
+            sections={sections}
+            blocks={blocks}
+            onSelectBlock={(b) => setSelectedBlock(b)}
+            selectedBlockId={selectedBlock?.block_id || null}
+            initialStatusFilter="APPROVED"
           />
         )}
 
