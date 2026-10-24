@@ -96,10 +96,18 @@ def call_gemini_api(
     )
 
     # Attempt 1: Using google-genai official SDK
+    active_models = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-3.8-flash",
+        "gemini-flash-lite-latest",
+        "gemini-3.5-flash",
+    ]
+
     try:
         from google import genai
         client = genai.Client(api_key=api_key)
-        for model_candidate in ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.0-flash"]:
+        for model_candidate in active_models:
             try:
                 response = client.models.generate_content(
                     model=model_candidate,
@@ -115,23 +123,25 @@ def call_gemini_api(
 
     # Attempt 2: Direct HTTP REST with httpx
     try:
-        models_to_try = ["gemini-1.5-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-pro"]
-        for model_name in models_to_try:
+        for model_name in active_models:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
             payload = {
                 "systemInstruction": {"parts": [{"text": system_instruction}]},
                 "contents": [{"parts": [{"text": user_query}]}],
                 "generationConfig": {"temperature": 0.4, "maxOutputTokens": 1200},
             }
-            with httpx.Client(timeout=15.0) as http_client:
-                r = http_client.post(url, json=payload)
-                if r.status_code == 200:
-                    data = r.json()
-                    parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
-                    if parts and "text" in parts[0]:
-                        return parts[0]["text"].strip(), None
-                elif r.status_code == 400 and "API_KEY_INVALID" in r.text:
-                    return None, "INVALID_API_KEY"
+            try:
+                with httpx.Client(timeout=15.0) as http_client:
+                    r = http_client.post(url, json=payload)
+                    if r.status_code == 200:
+                        data = r.json()
+                        parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+                        if parts and "text" in parts[0]:
+                            return parts[0]["text"].strip(), None
+                    elif r.status_code == 400 and "API_KEY_INVALID" in r.text:
+                        return None, "INVALID_API_KEY"
+            except Exception:
+                continue
     except Exception as http_err:
         return None, str(http_err)
 
@@ -696,19 +706,24 @@ class RailCopilotAgent:
         # -------------------------------------------------------------
         # Intent 0: Ingest Google Gemini API key if user provides it directly in chat
         # -------------------------------------------------------------
-        if (msg_clean.startswith("AIzaSy") and len(msg_clean) >= 35) or ("aizasy" in msg_clean and len(msg_clean) >= 35):
-            key_match = re.search(r"AIzaSy[A-Za-z0-9_-]{33}", msg_clean)
+        is_key_input = (
+            (msg_clean.startswith("AIzaSy") and len(msg_clean) >= 30)
+            or (msg_clean.startswith("AQ.") and len(msg_clean) >= 30)
+            or ("aizasy" in msg_clean.lower() and len(msg_clean) >= 30)
+        )
+        if is_key_input:
+            key_match = re.search(r"(?:AIzaSy|AQ\.)[A-Za-z0-9_-]{28,}", msg_clean)
             key_to_save = key_match.group(0) if key_match else msg_clean
             save_gemini_api_key(key_to_save)
             tools_executed.append({
                 "tool": "gemini_api_key_registration",
-                "params": {"key_preview": f"AIzaSy...{key_to_save[-4:]}"},
+                "params": {"key_preview": f"{key_to_save[:6]}...{key_to_save[-4:]}"},
                 "result": "Saved and activated Google Gemini API key in environment and .env configuration.",
             })
             reply_text = (
                 "### ✨ Google Gemini AI Key Activated!\n\n"
-                "Your Google Gemini API key has been securely configured. "
-                "**IR-Copilot** is now augmented with live Gemini AI reasoning.\n\n"
+                f"Your Google Gemini API key (`{key_to_save[:6]}...{key_to_save[-4:]}`) has been securely registered and activated.\n\n"
+                "**IR-Copilot** is now live with Google Gemini AI. "
                 "You can now ask **any question** about Indian Railways operations, signaling protocols, "
                 "technical manuals (IRPWM, ACTM, SEM, G&SR), Kavach TCAS, train regulations, or corridor maintenance!"
             )
