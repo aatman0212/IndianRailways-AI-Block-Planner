@@ -16,6 +16,7 @@ from backend.app.models import (
     BlockStatus,
     PlanAnalytics,
     Department,
+    Severity,
 )
 
 
@@ -42,13 +43,12 @@ class BlockPlanningOptimizer:
         """Runs the CP-SAT solver to produce the optimized block plan."""
         model = cp_model.CpModel()
 
-        # Filter feasible (task, window) pairs: same section and window >= task duration + 15m buffer
-        BUFFER_MINUTES = 15
+        # Filter feasible (task, window) pairs: same section and window >= task duration
         feasible_pairs: List[Tuple[int, int]] = []
         for t_idx, task in enumerate(self.tasks):
             for w_idx, win in enumerate(self.windows):
                 if task.section_id == win.section_id:
-                    if win.duration_minutes >= (task.min_duration_minutes + BUFFER_MINUTES):
+                    if win.duration_minutes >= task.min_duration_minutes:
                         feasible_pairs.append((t_idx, w_idx))
 
         if not feasible_pairs:
@@ -109,12 +109,60 @@ class BlockPlanningOptimizer:
             # b[w] <= 1 only if total_depts >= 2
             model.Add(total_depts_in_window >= 2 * b[w_idx])
 
+        # CONSTRAINT 4: Same-department sequential capacity within window
+        for w_idx in used_window_indices:
+            win = self.windows[w_idx]
+            for dept in Department:
+                dept_task_pairs = [
+                    (t_idx, self.tasks[t_idx].min_duration_minutes)
+                    for (t_idx, w) in feasible_pairs
+                    if w == w_idx and self.tasks[t_idx].department == dept
+                ]
+                if len(dept_task_pairs) > 1:
+                    model.Add(
+                        sum(dur * x[(t_idx, w_idx)] for t_idx, dur in dept_task_pairs)
+                        <= win.duration_minutes
+                    )
+
+        # Determine base date to calculate day offset for temporal urgency
+        try:
+            earliest_dt = min(datetime.strptime(w.start_time, "%Y-%m-%d %H:%M") for w in self.windows)
+        except Exception:
+            earliest_dt = datetime.now()
+
         # OBJECTIVE FUNCTION:
-        # Maximize: Sum(Priority * x) + BundlingBonus * b - DisruptionPenalty * y
+        # Maximize: Sum((Urgent_Priority_Term) * x) + BundlingBonus * b - DisruptionPenalty * y
         objective_terms = []
         for (t_idx, w_idx), x_var in x.items():
-            priority_int = int(round(self.tasks[t_idx].priority_score * 10))
-            objective_terms.append(priority_int * x_var)
+            task = self.tasks[t_idx]
+            win = self.windows[w_idx]
+
+            try:
+                win_dt = datetime.strptime(win.start_time, "%Y-%m-%d %H:%M")
+                day_offset = max(0, min(3, (win_dt.date() - earliest_dt.date()).days))
+            except Exception:
+                day_offset = 0
+
+            # Base priority scaled (e.g. 85.0 -> 850)
+            priority_int = int(round(task.priority_score * 10))
+
+            # Temporal discount: scheduling on later days loses urgency value
+            temporal_penalty = day_offset * 120
+
+            # Emergency multiplier: Emergency tasks MUST be executed in Day 0 (Tonight)
+            emergency_earliness_bonus = 0
+            if task.severity == Severity.EMERGENCY:
+                emergency_earliness_bonus = 1500 * (3 - day_offset)  # Day 0: +4500, Day 1: +3000, Day 2: +1500
+            elif task.severity == Severity.CRITICAL:
+                emergency_earliness_bonus = 400 * (3 - day_offset)   # Day 0: +1200, Day 1: +800
+
+            # Active speed restriction mitigation: urgent to remove caution order
+            speed_penalty_bonus = 0
+            if task.speed_restriction:
+                speed_penalty_bonus = 300 * (3 - day_offset)
+
+            task_weight = max(10, priority_int - temporal_penalty + emergency_earliness_bonus + speed_penalty_bonus)
+            objective_terms.append(task_weight * x_var)
 
         for w_idx in used_window_indices:
             # Bundling reward encourages packing multiple departments together
@@ -150,6 +198,12 @@ class BlockPlanningOptimizer:
                     if assigned_tasks:
                         win = self.windows[w_idx]
                         is_bundled = len(assigned_depts) >= 2
+                        has_emergency = any(t.severity == Severity.EMERGENCY for t in assigned_tasks)
+                        notes = (
+                            f"[EMERGENCY] High-priority immediate repair allocated for {len(assigned_tasks)} task(s)."
+                            if has_emergency
+                            else f"AI Optimized Block with {len(assigned_tasks)} tasks across {len(assigned_depts)} department(s)."
+                        )
                         block = ScheduledBlock(
                             block_id=f"BLK_{win.section_id}_{win.window_id.split('_')[-2]}_{win.window_id.split('_')[-1]}",
                             section_id=win.section_id,
@@ -163,12 +217,17 @@ class BlockPlanningOptimizer:
                             task_ids=[t.task_id for t in assigned_tasks],
                             tasks=assigned_tasks,
                             total_priority_value=round(total_p_val, 1),
-                            planner_notes=f"AI Optimized Block with {len(assigned_tasks)} tasks across {len(assigned_depts)} department(s).",
+                            planner_notes=notes,
                         )
                         scheduled_blocks.append(block)
 
-        # Sort blocks chronologically
-        scheduled_blocks.sort(key=lambda b: b.start_time)
+        # Sort blocks: Emergency blocks FIRST, then chronologically by start_time
+        scheduled_blocks.sort(
+            key=lambda b: (
+                0 if any(t.severity == Severity.EMERGENCY for t in b.tasks) else 1,
+                b.start_time,
+            )
+        )
         analytics = self._calculate_analytics(scheduled_blocks, self.tasks)
         return scheduled_blocks, analytics
 

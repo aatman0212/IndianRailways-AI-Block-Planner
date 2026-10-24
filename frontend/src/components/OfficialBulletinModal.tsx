@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScheduledBlock, Section } from '../types';
-import { X, Printer, Download, ShieldCheck, Train, CheckCircle2 } from 'lucide-react';
+import { X, Printer, Download, ShieldCheck, Train, CheckCircle2, FileText } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -23,7 +23,6 @@ export const OfficialBulletinModal: React.FC<Props> = ({
     return map;
   }, [sections]);
 
-  const approvedBlocks = blocks.filter((b) => b.status === 'APPROVED');
   const bulletinDate = new Date().toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
@@ -83,10 +82,11 @@ export const OfficialBulletinModal: React.FC<Props> = ({
         {/* Modal Action Bar (Hidden in Print) */}
         <div className="bg-slate-950 border-b border-slate-800 p-4 flex items-center justify-between print:hidden">
           <div className="flex items-center gap-2">
-            <span className="bg-sky-500/20 text-sky-400 border border-sky-500/40 text-xs font-bold px-2 py-0.5 rounded font-mono">
+            <span className="bg-blue-500/20 text-blue-400 border border-blue-500/40 text-xs font-bold px-2 py-0.5 rounded font-mono">
               FORM T/409 (COA)
             </span>
-            <span className="text-sm font-bold text-slate-100">
+            <span className="text-sm font-bold text-slate-100 flex items-center gap-1.5">
+              <FileText className="w-4 h-4 text-blue-400" />
               Official Indian Railways Block Circular Bulletin
             </span>
           </div>
@@ -94,21 +94,21 @@ export const OfficialBulletinModal: React.FC<Props> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportCSV}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-700"
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-700 cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5 text-sky-400" />
+              <Download className="w-3.5 h-3.5 text-blue-400" />
               Download CSV
             </button>
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-md shadow-sky-600/30"
+              className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               Print / Save PDF
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 ml-2"
+              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 ml-2 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -125,13 +125,13 @@ export const OfficialBulletinModal: React.FC<Props> = ({
             <div className="text-xl font-extrabold tracking-wide uppercase text-slate-100 print:text-slate-900 font-serif">
               NORTH CENTRAL RAILWAY — PRAYAGRAJ DIVISION
             </div>
-            <div className="text-xs font-bold text-sky-400 print:text-slate-700 uppercase tracking-wider">
+            <div className="text-xs font-bold text-blue-400 print:text-slate-700 uppercase tracking-wider">
               CONTROL OFFICE APPLICATION (COA) • AUTOMATIC BLOCK ADVICE CIRCULAR
             </div>
             <div className="flex items-center justify-between text-xs font-mono text-slate-400 print:text-slate-600 pt-2 px-2">
               <span>Bulletin Ref: <strong className="text-slate-200 print:text-slate-900">{bulletinNo}</strong></span>
               <span>Date: <strong className="text-slate-200 print:text-slate-900">{bulletinDate}</strong></span>
-              <span>Corridor: <strong>PRYJ – CNB UP MAIN</strong></span>
+              <span>Corridor: <strong>PRYJ – CNB UP & DOWN MAIN TRUNK CORRIDOR (191 KM)</strong></span>
             </div>
           </div>
 
@@ -162,18 +162,24 @@ export const OfficialBulletinModal: React.FC<Props> = ({
                 {blocks.map((b) => {
                   const sec = sectionMap[b.section_id];
                   const isApproved = b.status === 'APPROVED';
+                  const isDownLine = b.section_id.endsWith('_DN') || sec?.line_type === 'DN_MAIN';
 
                   return (
                     <tr key={b.block_id} className={isApproved ? 'bg-emerald-950/10 print:bg-emerald-50/50' : ''}>
-                      <td className="p-2 font-mono font-bold text-sky-400 print:text-slate-900 border-r border-slate-800 print:border-slate-300">
+                      <td className="p-2 font-mono font-bold text-blue-400 print:text-slate-900 border-r border-slate-800 print:border-slate-300">
                         {b.block_id.replace('BLK_', '')}
                       </td>
                       <td className="p-2 border-r border-slate-800 print:border-slate-300">
-                        <div className="font-semibold text-slate-200 print:text-slate-900">{sec?.name || b.section_id}</div>
-                        <div className="text-[10px] text-slate-400 print:text-slate-600 font-mono">Km {sec?.start_km} – {sec?.end_km} ({sec?.traffic_density_gmt} GMT)</div>
+                        <div className="font-semibold text-slate-200 print:text-slate-900 flex items-center gap-1.5">
+                          <span>{sec?.name || b.section_id}</span>
+                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded border border-slate-700 print:border-slate-400">
+                            {isDownLine ? 'DOWN' : 'UP'}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-400 print:text-slate-600 font-mono">Km {sec?.start_km ?? '--'} – {sec?.end_km ?? '--'} ({sec?.traffic_density_gmt ?? '--'} GMT)</div>
                       </td>
                       <td className="p-2 font-mono border-r border-slate-800 print:border-slate-300 text-slate-300 print:text-slate-800 whitespace-nowrap">
-                        {b.start_time} <br/> to {b.end_time.split(' ')[1]}
+                        {b.start_time} <br/> to {b.end_time?.includes(' ') ? b.end_time.split(' ')[1] : b.end_time}
                       </td>
                       <td className="p-2 text-center font-mono font-bold border-r border-slate-800 print:border-slate-300 text-slate-200 print:text-slate-900">
                         {b.duration_minutes}m
@@ -187,7 +193,7 @@ export const OfficialBulletinModal: React.FC<Props> = ({
                           ))}
                         </div>
                         {b.is_bundled && (
-                          <div className="text-[10px] font-bold text-sky-400 print:text-blue-800 mt-0.5">
+                          <div className="text-[10px] font-bold text-blue-400 print:text-blue-800 mt-0.5">
                             ★ Joint Bundled Block ({b.tasks.length} tasks)
                           </div>
                         )}

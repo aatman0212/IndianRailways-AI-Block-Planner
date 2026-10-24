@@ -5,7 +5,7 @@ Indian Railways Decision Support System
 
 import json
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, HTTPException, Query, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,6 +23,7 @@ from backend.app.models import (
 )
 from backend.app.prioritization import TaskPrioritizer
 from backend.app.optimizer import BlockPlanningOptimizer
+from backend.app.copilot import RailCopilotAgent, DelayPropagationModel, RailwayRulebookRAG
 
 app = FastAPI(
     title="AI Automatic Block Planning API",
@@ -53,7 +54,7 @@ STATE: Dict[str, Any] = {
 
 
 def load_initial_data():
-    """Loads default synthetic dataset into memory."""
+    """Loads default synthetic dataset into memory and mirrors UP/DOWN infrastructure."""
     if not DATA_PATH.exists():
         from backend.app.synthetic_data import seed_synthetic_dataset
         seed_synthetic_dataset(str(DATA_PATH))
@@ -61,16 +62,71 @@ def load_initial_data():
     with open(DATA_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    STATE["sections"] = {s["section_id"]: Section(**s) for s in data.get("sections", [])}
+    # 1. Load sections and register both UP Main and DOWN Main sections
+    sections: Dict[str, Section] = {}
+    for s in data.get("sections", []):
+        sec = Section(**s)
+        sections[sec.section_id] = sec
+        # Create corresponding DOWN section if not already present
+        if sec.section_id.endswith("_UP"):
+            dn_id = sec.section_id.replace("_UP", "_DN")
+            dn_name = sec.name.replace("(UP)", "(DOWN)").replace("UP", "DOWN")
+            if dn_id not in sections:
+                sections[dn_id] = Section(
+                    section_id=dn_id,
+                    division=sec.division,
+                    name=dn_name,
+                    line_type="DN_MAIN",
+                    start_km=sec.start_km,
+                    end_km=sec.end_km,
+                    traffic_density_gmt=sec.traffic_density_gmt,
+                    max_permissible_speed=sec.max_permissible_speed,
+                )
+    STATE["sections"] = sections
+
+    # 2. Load maintenance tasks
     STATE["tasks"] = {t["task_id"]: UnifiedMaintenanceTask(**t) for t in data.get("tasks", [])}
-    STATE["windows"] = {w["window_id"]: CorridorBlockWindow(**w) for w in data.get("windows", [])}
+
+    # 3. Load windows and mirror available traffic gap windows for DOWN Main
+    windows: Dict[str, CorridorBlockWindow] = {}
+    for w in data.get("windows", []):
+        win = CorridorBlockWindow(**w)
+        windows[win.window_id] = win
+        if win.section_id.endswith("_UP"):
+            dn_win_id = win.window_id.replace("_UP", "_DN")
+            dn_sec_id = win.section_id.replace("_UP", "_DN")
+            if dn_win_id not in windows:
+                windows[dn_win_id] = CorridorBlockWindow(
+                    window_id=dn_win_id,
+                    section_id=dn_sec_id,
+                    start_time=win.start_time,
+                    end_time=win.end_time,
+                    duration_minutes=win.duration_minutes,
+                    window_type=win.window_type,
+                    impact_score=win.impact_score,
+                )
+    STATE["windows"] = windows
 
     # Automatically run initial planning so the API is immediately ready
     run_planning_cycle()
 
 
+def save_state_to_disk():
+    """Persists current state tasks and custom windows to disk so user-added defects and scheduled blocks survive server reloads."""
+    try:
+        if DATA_PATH.exists():
+            with open(DATA_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            data["tasks"] = [t.model_dump() for t in STATE["tasks"].values()]
+            data["windows"] = [w.model_dump() for w in STATE["windows"].values()]
+            with open(DATA_PATH, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"Warning: Failed to save state to disk: {e}")
+
+
 def run_planning_cycle() -> Dict[str, Any]:
-    """Scores tasks and runs the Google OR-Tools bundling optimizer."""
+    """Scores tasks and runs the Google OR-Tools bundling optimizer while preserving approved and advance blocks."""
     sections_map = STATE["sections"]
     tasks_list = list(STATE["tasks"].values())
     windows_list = list(STATE["windows"].values())
@@ -82,17 +138,41 @@ def run_planning_cycle() -> Dict[str, Any]:
     for t in ranked_tasks:
         STATE["tasks"][t.task_id] = t
 
-    # 2. OR-Tools Bundling & Scheduling Optimization
-    optimizer = BlockPlanningOptimizer(ranked_tasks, windows_list)
-    blocks, analytics = optimizer.solve()
+    # 2. Identify committed/approved blocks that MUST NOT be discarded by the optimizer
+    existing_plan = STATE.get("current_plan", [])
+    committed_blocks: List[ScheduledBlock] = [
+        b for b in existing_plan
+        if b.status == BlockStatus.APPROVED or "MEGA_BLOCK" in b.block_id or "ADVANCE" in b.window_id
+    ]
 
-    STATE["current_plan"] = blocks
-    STATE["analytics"] = analytics
+    committed_task_ids = set()
+    committed_window_ids = set()
+    for b in committed_blocks:
+        committed_task_ids.update(b.task_ids)
+        committed_window_ids.add(b.window_id)
+
+    # 3. Tasks and windows remaining for unconstrained routine optimization
+    unallocated_tasks = [t for t in ranked_tasks if t.task_id not in committed_task_ids]
+    available_windows = [w for w in windows_list if w.window_id not in committed_window_ids]
+
+    # 4. OR-Tools Bundling & Scheduling Optimization on remaining workload
+    optimizer = BlockPlanningOptimizer(unallocated_tasks, available_windows)
+    new_blocks, _ = optimizer.solve()
+
+    # 5. Merge committed approved blocks with newly optimized routine blocks
+    merged_blocks = committed_blocks + new_blocks
+
+    # 6. Recompute comprehensive analytics across the unified plan
+    full_analytics = optimizer._calculate_analytics(merged_blocks, ranked_tasks)
+
+    STATE["current_plan"] = merged_blocks
+    STATE["analytics"] = full_analytics
     STATE["last_planned_at"] = datetime.now().isoformat()
+    save_state_to_disk()
 
     return {
-        "scheduled_blocks_count": len(blocks),
-        "analytics": analytics,
+        "scheduled_blocks_count": len(merged_blocks),
+        "analytics": full_analytics,
         "planned_at": STATE["last_planned_at"],
     }
 
@@ -156,12 +236,15 @@ def create_task(task: UnifiedMaintenanceTask, auto_replan: bool = True):
     if auto_replan:
         replan_result = run_planning_cycle()
         
+    save_state_to_disk()
+        
     return {
         "status": "success",
         "task": scored_task,
         "replan_triggered": auto_replan,
         "blocks": STATE["current_plan"] if auto_replan else [],
         "analytics": STATE["analytics"] if auto_replan else None,
+        "tasks": list(STATE["tasks"].values()),
     }
 
 
@@ -178,10 +261,12 @@ def get_windows(section_id: Optional[str] = None):
 def trigger_plan_generation():
     """Executes AI prioritization and OR-Tools bundling optimization."""
     result = run_planning_cycle()
+    save_state_to_disk()
     return {
         "message": "AI Block Plan successfully generated with multi-department bundling.",
         "blocks": STATE["current_plan"],
         "analytics": STATE["analytics"],
+        "tasks": list(STATE["tasks"].values()),
         "last_planned_at": STATE["last_planned_at"],
     }
 
@@ -212,7 +297,20 @@ def approve_block(block_id: str, payload: OverrideRequest = Body(default_factory
             b.approval_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             if payload.planner_notes:
                 b.planner_notes = payload.planner_notes
-            return {"status": "success", "block": b}
+            save_state_to_disk()
+            return {
+                "status": "success",
+                "block": b,
+                "message": f"Block permit SANCTIONED: Section {b.section_id} scheduled for track possession from {b.start_time} to {b.end_time} IST ({b.duration_minutes} mins). Caution orders issued.",
+                "blocked_window": {
+                    "section_id": b.section_id,
+                    "start_time": b.start_time,
+                    "end_time": b.end_time,
+                    "duration_minutes": b.duration_minutes,
+                    "approved_by": b.approved_by,
+                    "sanction_timestamp": b.approval_timestamp,
+                },
+            }
     raise HTTPException(status_code=404, detail="Block not found")
 
 
@@ -225,8 +323,155 @@ def reject_block(block_id: str, payload: OverrideRequest = Body(default_factory=
             b.approved_by = payload.user_name
             if payload.planner_notes:
                 b.planner_notes = payload.planner_notes
+            save_state_to_disk()
             return {"status": "success", "block": b}
     raise HTTPException(status_code=404, detail="Block not found")
+
+
+class FutureBlockRequest(BaseModel):
+    section_id: str
+    start_time: str
+    end_time: str
+    duration_minutes: int
+    block_type: str = "MEGA_BLOCK"
+    departments: List[Department] = [Department.ENGINEERING, Department.TRD]
+    planner_notes: Optional[str] = None
+    pull_pending_tasks: bool = True
+    approved_by: str = "Chief Controller (Planning)"
+
+
+@app.post("/api/plan/blocks/schedule-future")
+def schedule_future_block(payload: FutureBlockRequest):
+    """
+    Schedules an advance Mega Block or planned corridor possession for a future date/time.
+    Automatically assigns matching pending tasks from the backlog if requested.
+    Strictly validates that block date and start time are NOT in the past.
+    """
+    now = datetime.now()
+
+    # 0. Strict validation: Ensure block date and start time are NOT in the past
+    try:
+        start_dt = datetime.strptime(payload.start_time.strip(), "%Y-%m-%d %H:%M")
+    except ValueError:
+        try:
+            start_dt = datetime.fromisoformat(payload.start_time.strip())
+        except Exception:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid date/time format: '{payload.start_time}'. Expected 'YYYY-MM-DD HH:MM'."
+            )
+
+    # Disallow times that are in the past (with 3-minute grace period for network latency)
+    if start_dt < now - timedelta(minutes=3):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot schedule block possession in the past ({payload.start_time}). Possession date and time must be today or future (current IST: {now.strftime('%Y-%m-%d %H:%M')})."
+        )
+
+    # Validate end time (handle midnight crossing)
+    try:
+        end_dt = datetime.strptime(payload.end_time.strip(), "%Y-%m-%d %H:%M")
+    except ValueError:
+        try:
+            end_dt = datetime.fromisoformat(payload.end_time.strip())
+        except Exception:
+            end_dt = start_dt + timedelta(minutes=payload.duration_minutes)
+
+    if end_dt <= start_dt:
+        end_dt = start_dt + timedelta(minutes=payload.duration_minutes)
+        payload.end_time = end_dt.strftime("%Y-%m-%d %H:%M")
+
+    now_str = now.strftime("%Y%m%d_%H%M%S")
+    block_id = f"BLK_{payload.block_type}_{payload.section_id}_{now_str}"
+    window_id = f"WIN_ADVANCE_{payload.section_id}_{now_str}"
+
+    # 1. Register this custom window in STATE["windows"]
+    custom_window = CorridorBlockWindow(
+        window_id=window_id,
+        section_id=payload.section_id,
+        start_time=payload.start_time,
+        end_time=payload.end_time,
+        duration_minutes=payload.duration_minutes,
+        window_type=payload.block_type,
+        impact_score=0.9 if ("01:" in payload.start_time or "02:" in payload.start_time) else 1.5,
+    )
+    STATE["windows"][window_id] = custom_window
+
+    # 2. Gather tasks
+    assigned_tasks: List[UnifiedMaintenanceTask] = []
+    task_ids: List[str] = []
+    total_priority = 0.0
+
+    if payload.pull_pending_tasks:
+        for task in STATE["tasks"].values():
+            if task.section_id == payload.section_id and task.department in payload.departments:
+                if task.task_id not in task_ids:
+                    assigned_tasks.append(task)
+                    task_ids.append(task.task_id)
+                    total_priority += task.priority_score
+
+    # If no existing tasks in backlog, generate an official planned mega block job
+    if not assigned_tasks:
+        primary_dept = payload.departments[0] if payload.departments else Department.ENGINEERING
+        rep_task = UnifiedMaintenanceTask(
+            task_id=f"TASK_{payload.block_type}_{now_str[-4:]}",
+            department=primary_dept,
+            source_system="TMS" if primary_dept == Department.ENGINEERING else "TDMS" if primary_dept == Department.TRD else "SMMS",
+            section_id=payload.section_id,
+            asset_id=f"CORRIDOR_{payload.section_id}_KM_POST",
+            title=f"Scheduled {payload.block_type.replace('_', ' ').title()}: Corridor Renewal",
+            description=payload.planner_notes or f"Advance corridor possession reserved for {payload.duration_minutes}m multi-department work.",
+            severity=Severity.CRITICAL,
+            min_duration_minutes=payload.duration_minutes,
+            reported_date=payload.start_time.split(" ")[0] if " " in payload.start_time else datetime.now().strftime("%Y-%m-%d"),
+            due_date=payload.end_time.split(" ")[0] if " " in payload.end_time else datetime.now().strftime("%Y-%m-%d"),
+            days_overdue=0,
+            is_statutory=True,
+            requires_power_block=Department.TRD in payload.departments,
+            requires_traffic_block=True,
+            priority_score=85.0,
+            score_factors={"planned_mega_block": 85.0},
+            rationale=f"Advance Mega Block scheduled and approved by {payload.approved_by}.",
+        )
+        STATE["tasks"][rep_task.task_id] = rep_task
+        assigned_tasks.append(rep_task)
+        task_ids.append(rep_task.task_id)
+        total_priority = rep_task.priority_score
+
+    # 3. Create the ScheduledBlock
+    new_block = ScheduledBlock(
+        block_id=block_id,
+        section_id=payload.section_id,
+        window_id=window_id,
+        start_time=payload.start_time,
+        end_time=payload.end_time,
+        duration_minutes=payload.duration_minutes,
+        status=BlockStatus.APPROVED,
+        departments=payload.departments,
+        is_bundled=len(payload.departments) >= 2,
+        task_ids=task_ids,
+        tasks=assigned_tasks,
+        total_priority_value=total_priority,
+        planner_notes=payload.planner_notes or f"Advance Mega Block sanctioned by {payload.approved_by}.",
+        approval_timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        approved_by=payload.approved_by,
+    )
+
+    # 4. Prepend to current plan
+    STATE["current_plan"] = [new_block] + [b for b in STATE["current_plan"] if b.block_id != block_id]
+
+    # 5. Recompute analytics
+    optimizer = BlockPlanningOptimizer(list(STATE["tasks"].values()), list(STATE["windows"].values()))
+    STATE["analytics"] = optimizer._calculate_analytics(STATE["current_plan"], list(STATE["tasks"].values()))
+    save_state_to_disk()
+
+    return {
+        "status": "success",
+        "message": f"Advance Mega Block successfully scheduled on {payload.section_id} ({payload.start_time} - {payload.end_time}).",
+        "block": new_block,
+        "blocks": STATE["current_plan"],
+        "analytics": STATE["analytics"],
+    }
 
 
 @app.get("/api/analytics", response_model=PlanAnalytics)
@@ -237,74 +482,56 @@ def get_analytics():
     return STATE["analytics"]
 
 
-class ConflictRequest(BaseModel):
-    train_number: str = "12424"
-    train_name: str = "Dibrugarh Rajdhani Express"
-    delay_minutes: int = 40
-    section_id: str = "SEC_SFG_MRE_UP"
+# -------------------------------------------------------------
+# AI CONTROLLER COPILOT & RULEBOOK RAG ENDPOINTS
+# -------------------------------------------------------------
+
+class CopilotChatRequest(BaseModel):
+    message: str
 
 
-@app.get("/api/simulate/conflict")
-def get_current_conflict():
-    return {"conflict": STATE.get("active_conflict")}
-
-
-@app.post("/api/simulate/conflict")
-def inject_conflict(payload: ConflictRequest = Body(default_factory=ConflictRequest)):
-    """Simulates an upstream train delay causing an active corridor conflict."""
-    conflicting_block = None
-    for b in STATE["current_plan"]:
-        if b.section_id == payload.section_id:
-            conflicting_block = b
-            break
-
-    sec = STATE["sections"].get(payload.section_id)
-    sec_name = sec.name if sec else payload.section_id
-
-    conflict = {
-        "conflict_id": f"CONF-{int(datetime.now().timestamp())}",
-        "train_number": payload.train_number,
-        "train_name": payload.train_name,
-        "delay_minutes": payload.delay_minutes,
-        "section_id": payload.section_id,
-        "section_name": sec_name,
-        "conflicting_block_id": conflicting_block.block_id if conflicting_block else "BLK_UNKNOWN",
-        "eta": "02:10 (Revised with +40m delay)",
-        "message": f"Train {payload.train_number} ({payload.train_name}) suffered a +{payload.delay_minutes}m upstream signal detention. Revised path violates safety buffer of scheduled block on {sec_name}!",
-        "is_resolved": False,
-    }
-    STATE["active_conflict"] = conflict
-    return {"status": "success", "conflict": conflict}
-
-
-@app.post("/api/simulate/resolve-conflict")
-def resolve_conflict():
-    """Executes OR-Tools dynamic re-optimization to resolve headway conflict."""
-    conflict = STATE.get("active_conflict")
-    if not conflict:
-        return {"status": "no_conflict", "message": "No active conflict to resolve"}
-
-    run_planning_cycle()
-
-    for b in STATE["current_plan"]:
-        if b.section_id == conflict["section_id"]:
-            b.planner_notes = f"Auto-rescheduled via OR-Tools CP-SAT to avoid Train {conflict['train_number']} {conflict['train_name']} (+{conflict['delay_minutes']}m delay). Headway restored."
-
-    res_note = f"OR-Tools CP-SAT re-optimized corridor schedule: maintenance block shifted safely to protect Train {conflict['train_number']} {conflict['train_name']} with 0 passenger delays!"
-    STATE["active_conflict"] = None
-
+@app.post("/api/copilot/chat")
+def copilot_chat(payload: CopilotChatRequest):
+    """
+    Autonomous AI Controller Copilot with RAG over Railway Manuals
+    and dynamic constraint re-planning.
+    """
+    agent = RailCopilotAgent(STATE)
+    result = agent.process_message(payload.message)
+    delay_impact = DelayPropagationModel.calculate_impact(
+        STATE["current_plan"],
+        len(STATE["tasks"]),
+        list(STATE["tasks"].values()),
+    )
     return {
-        "status": "resolved",
-        "resolution_note": res_note,
+        "reply": result["reply"],
+        "action_type": result["action_type"],
+        "tools_executed": result["tools_executed"],
         "blocks": STATE["current_plan"],
         "analytics": STATE["analytics"],
+        "delay_impact": delay_impact,
+        "timestamp": result["timestamp"],
     }
 
 
-@app.post("/api/simulate/clear-conflict")
-def clear_conflict():
-    STATE["active_conflict"] = None
-    return {"status": "cleared"}
+@app.get("/api/copilot/delay-impact")
+def get_copilot_delay_impact():
+    """Returns delay propagation savings & punctuality preservation metrics."""
+    return DelayPropagationModel.calculate_impact(
+        STATE["current_plan"],
+        len(STATE["tasks"]),
+        list(STATE["tasks"].values()),
+    )
+
+
+@app.get("/api/copilot/memo/{block_id}")
+def get_block_memo(block_id: str):
+    """Generates official Indian Railways Caution Order & Safety Checklist with cited rules."""
+    for b in STATE["current_plan"]:
+        if b.block_id == block_id:
+            section = STATE["sections"].get(b.section_id)
+            return RailwayRulebookRAG.generate_caution_order_draft(b, section)
+    raise HTTPException(status_code=404, detail="Block not found")
 
 
 if __name__ == "__main__":

@@ -40,55 +40,12 @@ This system provides a clean, automated **AI Decision-Support System** for Railw
 5. **Real-time Executive KPIs:**
    * Track Asset Availability Rate (>97%).
    * Idle Window Reduction Efficiency (>65%).
-   * Co-Scheduled Bundling Ratio (>50%).
+   * Co-Scheduled Bundling Ratio.
    * Overdue Defect Backlog reduction.
-6. **Live Upstream Train Delay & Conflict Resolver:**
-   * Simulates high-priority train detention (e.g. 12424 Rajdhani delayed by 40 min).
-   * Flags headway violations in real time and reschedules conflicting maintenance blocks in <2s with zero passenger stoppage.
-7. **Official Indian Railways Form T/409 Block Advice Circular:**
-   * Generates formatted Control Office block notices with printable layout and CSV export.
 
 ---
 
-## 3. System Architecture
-
-```mermaid
-flowchart TD
-    subgraph DataIngestion ["Multi-Department Data Sources"]
-        TMS["TMS (Engineering/P.Way)"]
-        TDMS["TDMS (OHE/TRD)"]
-        SMMS["SMMS (Signals/S&T)"]
-        COA["COA (Train Timetables & Gaps)"]
-    end
-
-    subgraph CoreEngine ["AI & Optimization Layer"]
-        MCDA["MCDA Prioritization Engine\n(5-Factor Safety/Overdue Scoring)"]
-        CPSAT["Google OR-Tools CP-SAT Solver\n(Spatial-Temporal Constraint & Bundling)"]
-    end
-
-    subgraph APILayer ["FastAPI REST Service"]
-        API["FastAPI Backend (:8000)\n• /api/plan/current\n• /api/simulate/conflict\n• /api/tasks"]
-    end
-
-    subgraph ClientLayer ["Mission Control UI (React 18 + Vite)"]
-        Gantt["24h Corridor Possession Gantt"]
-        Mimic["Digital Twin Route Mimic"]
-        WhatIf["What-If Scenario Simulator"]
-        Bulletin["Form T/409 Export"]
-    end
-
-    TMS --> MCDA
-    TDMS --> MCDA
-    SMMS --> MCDA
-    MCDA --> CPSAT
-    COA --> CPSAT
-    CPSAT --> API
-    API <--> ClientLayer
-```
-
----
-
-## 4. Technology Stack
+## 3. Technology Stack
 
 * **Core Language:** Python 3.12 + TypeScript
 * **AI & Optimization:** Google OR-Tools CP-SAT + Multi-Criteria Decision Analysis (MCDA)

@@ -14,8 +14,16 @@ ROOT_DIR = Path(__file__).parent.resolve()
 VENV_PYTHON = ROOT_DIR / "venv" / "Scripts" / "python.exe"
 FRONTEND_DIR = ROOT_DIR / "frontend"
 
-if not VENV_PYTHON.exists():
-    VENV_PYTHON = sys.executable
+def is_valid_python(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        return subprocess.run([str(path), "--version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+    except Exception:
+        return False
+
+if not is_valid_python(VENV_PYTHON):
+    VENV_PYTHON = Path(sys.executable)
 
 
 def main():

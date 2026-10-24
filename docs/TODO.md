@@ -63,9 +63,6 @@
   - Built `frontend/src/components/OfficialBulletinModal.tsx` generating formatted Control Office block advice memos with digital verification, print-ready CSS (`window.print()`), and CSV data download.
 - [x] **FEAT-05: Section Controller Mission-Control UI Overhaul**
   - Overhauled `frontend/src/App.tsx`, `CorridorGantt.tsx`, and `KpiCards.tsx` with Indian Railways branding, ticking live IST clock, 24-hour timeline ruler, night lull shading, and telemetry gauges.
-- [x] **FEAT-06: Real-Time Upstream Train Delay & CP-SAT Autonomous Conflict Resolver**
-  - Built `frontend/src/components/ConflictSimulatorModal.tsx` and `ConflictBanner.tsx` allowing Section Controllers to simulate upstream high-priority train delays (Rajdhani, Vande Bharat).
-  - Added REST endpoints `POST /api/simulate/conflict` and `POST /api/simulate/resolve-conflict` triggering Google OR-Tools CP-SAT re-optimization to dynamically reschedule conflicting blocks into safe traffic lulls without train stoppage.
 
 ---
 

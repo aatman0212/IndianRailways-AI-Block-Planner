@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Section, ScheduledBlock, PlanAnalytics, UnifiedMaintenanceTask, TrafficConflict } from './types';
+import { Section, ScheduledBlock, PlanAnalytics, UnifiedMaintenanceTask } from './types';
+import { VisualHero } from './components/VisualHero';
 import { KpiCards } from './components/KpiCards';
+import { QuickGuide } from './components/QuickGuide';
 import { CorridorGantt } from './components/CorridorGantt';
 import { TrackSchematic } from './components/TrackSchematic';
 import { WhatIfSimulator } from './components/WhatIfSimulator';
@@ -8,23 +10,24 @@ import { TaskInventory } from './components/TaskInventory';
 import { ExplainModal } from './components/ExplainModal';
 import { InjectDefectModal } from './components/InjectDefectModal';
 import { OfficialBulletinModal } from './components/OfficialBulletinModal';
-import { ConflictSimulatorModal } from './components/ConflictSimulatorModal';
-import { ConflictBanner } from './components/ConflictBanner';
+import { ScheduleFutureBlockModal } from './components/ScheduleFutureBlockModal';
+import { RailCopilot } from './components/RailCopilot';
 import {
   Train,
   RefreshCw,
   Layers,
   CheckCircle2,
-  AlertCircle,
-  Shield,
-  Sparkles,
-  AlertOctagon,
+  AlertTriangle,
   FileText,
   Sliders,
   Radio,
-  MapPin,
   Clock,
-  AlertTriangle,
+  Bot,
+  Calendar,
+  Navigation,
+  PlusCircle,
+  CalendarPlus,
+  Sparkles,
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -34,13 +37,11 @@ export const App: React.FC = () => {
   const [analytics, setAnalytics] = useState<PlanAnalytics | null>(null);
   const [selectedBlock, setSelectedBlock] = useState<ScheduledBlock | null>(null);
   const [isInjectModalOpen, setIsInjectModalOpen] = useState<boolean>(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState<boolean>(false);
   const [isBulletinModalOpen, setIsBulletinModalOpen] = useState<boolean>(false);
-  const [isConflictModalOpen, setIsConflictModalOpen] = useState<boolean>(false);
-  const [activeConflict, setActiveConflict] = useState<TrafficConflict | null>(null);
-  const [isResolvingConflict, setIsResolvingConflict] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [optimizing, setOptimizing] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'GANTT' | 'MIMIC' | 'WHATIF' | 'TASKS'>('GANTT');
+  const [activeTab, setActiveTab] = useState<'GANTT' | 'MIMIC' | 'WHATIF' | 'TASKS' | 'COPILOT'>('GANTT');
   const [notification, setNotification] = useState<{ msg: string; type?: 'info' | 'alert' } | null>(null);
 
   // Live ticking IST Clock
@@ -85,19 +86,9 @@ export const App: React.FC = () => {
       setTasks(tasksData);
       setBlocks(planData.blocks || []);
       setAnalytics(planData.analytics || null);
-
-      try {
-        const confRes = await fetch('/api/simulate/conflict');
-        const confData = await confRes.json();
-        if (confData.conflict) {
-          setActiveConflict(confData.conflict);
-        }
-      } catch {
-        // ignore
-      }
     } catch (err) {
       console.error('Failed to load railway data:', err);
-      showToast('Error connecting to backend API. Please ensure FastAPI is running.', 'alert');
+      showToast('Error connecting to backend API. Please verify the server is running.', 'alert');
     } finally {
       setLoading(false);
     }
@@ -107,66 +98,20 @@ export const App: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleInjectConflict = async (trainNo: string, trainName: string, delayMins: number, sectionId: string) => {
-    try {
-      const res = await fetch('/api/simulate/conflict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          train_number: trainNo,
-          train_name: trainName,
-          delay_minutes: delayMins,
-          section_id: sectionId,
-        }),
-      });
-      const data = await res.json();
-      if (data.status === 'success') {
-        setActiveConflict(data.conflict);
-        showToast(
-          `🚨 CONFLICT DETECTED: Train ${trainNo} ${trainName} (+${delayMins}m delay) violates headway of active block on ${data.conflict.section_name}!`,
-          'alert'
-        );
-      }
-    } catch (err) {
-      console.error('Failed to inject conflict:', err);
-      showToast('Failed to simulate train delay.', 'alert');
-    }
-  };
-
-  const handleResolveConflict = async () => {
-    try {
-      setIsResolvingConflict(true);
-      const res = await fetch('/api/simulate/resolve-conflict', { method: 'POST' });
-      const data = await res.json();
-      if (data.status === 'resolved') {
-        setActiveConflict(null);
-        setBlocks(data.blocks || []);
-        setAnalytics(data.analytics || null);
-        showToast(`⚡ ${data.resolution_note}`, 'info');
-      }
-    } catch (err) {
-      console.error('Failed to resolve conflict:', err);
-      showToast('Error resolving conflict with optimizer.', 'alert');
-    } finally {
-      setIsResolvingConflict(false);
-    }
-  };
-
-  const handleClearConflict = async () => {
-    try {
-      await fetch('/api/simulate/clear-conflict', { method: 'POST' });
-      setActiveConflict(null);
-      showToast('Conflict alert dismissed.', 'info');
-    } catch (err) {
-      console.error('Failed to clear conflict:', err);
-    }
-  };
-
   const handleDefectInjected = async (newBlockCount: number, taskTitle: string, score: number) => {
     await fetchData();
+    setActiveTab('GANTT');
     showToast(
-      `🚨 DEFECT INJECTED: "${taskTitle}" received AI Priority ${score}/100! Corridor schedule dynamically updated with ${newBlockCount} blocks.`,
+      `🚨 Defect recorded: "${taskTitle}" (Priority ${score}/100). Schedule immediately re-optimized into earliest window!`,
       'alert'
+    );
+  };
+
+  const handleFutureBlockScheduled = async (newBlockCount: number, message: string) => {
+    await fetchData();
+    showToast(
+      message || `Advance Mega Block successfully scheduled. Schedule updated with ${newBlockCount} blocks.`,
+      'info'
     );
   };
 
@@ -174,15 +119,27 @@ export const App: React.FC = () => {
     try {
       setOptimizing(true);
       const res = await fetch('/api/plan/generate', { method: 'POST' });
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}: ${res.statusText}`);
+      }
       const data = await res.json();
-      setBlocks(data.blocks || []);
-      setAnalytics(data.analytics || null);
+      const newBlocks = Array.isArray(data.blocks) ? data.blocks : [];
+      const newAnalytics = data.analytics || null;
+      setBlocks(newBlocks);
+      setAnalytics(newAnalytics);
+      if (Array.isArray(data.tasks)) {
+        setTasks(data.tasks);
+      }
       showToast(
-        `AI Block Plan generated! Co-scheduled ${data.blocks.length} blocks with ${data.analytics?.bundled_blocks_count} multi-dept bundled possessions.`
+        `Plan updated: ${newBlocks.length} corridor blocks scheduled with ${newAnalytics?.bundled_blocks_count || 0} multi-department possessions.`,
+        'info'
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('Plan generation failed:', err);
-      showToast('Optimization failed. Check server logs.', 'alert');
+      const errorMsg = err?.message?.includes('Failed to fetch')
+        ? 'Cannot connect to backend server (Port 8000). Please ensure server is running.'
+        : `Optimization error: ${err?.message || 'Server error'}`;
+      showToast(errorMsg, 'alert');
     } finally {
       setOptimizing(false);
     }
@@ -197,9 +154,13 @@ export const App: React.FC = () => {
       });
       const data = await res.json();
       if (data.status === 'success') {
-        setBlocks((prev) => prev.map((b) => (b.block_id === blockId ? data.block : b)));
+        const b = data.block;
+        setBlocks((prev) => prev.map((item) => (item.block_id === blockId ? b : item)));
         setSelectedBlock(null);
-        showToast(`Block ${blockId} officially approved by Section Controller.`);
+        showToast(
+          `✓ PERMIT SANCTIONED: Section ${b.section_id} BLOCKED from ${b.start_time} to ${b.end_time?.includes(' ') ? b.end_time.split(' ')[1] : b.end_time} IST (${b.duration_minutes}m). Caution orders dispatched.`,
+          'info'
+        );
       }
     } catch (err) {
       console.error('Failed to approve block:', err);
@@ -227,168 +188,190 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070d18] text-slate-100 flex flex-col selection:bg-sky-500/30 font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       {/* Toast Notification */}
       {notification && (
         <div
-          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs flex items-center gap-2.5 animate-in slide-in-from-top duration-200 border ${
+          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl text-xs flex items-center gap-2.5 border shadow-xl animate-in fade-in slide-in-from-top-2 ${
             notification.type === 'alert'
-              ? 'bg-rose-950 border-rose-500/60 text-rose-200 shadow-rose-950/60'
-              : 'bg-sky-950 border-sky-500/60 text-sky-200 shadow-sky-950/60'
+              ? 'bg-slate-900 border-red-700/80 text-red-200'
+              : 'bg-slate-900 border-emerald-700/80 text-emerald-200'
           }`}
         >
           {notification.type === 'alert' ? (
-            <AlertOctagon className="w-5 h-5 text-rose-400 shrink-0 animate-bounce" />
+            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           )}
           <span className="font-medium">{notification.msg}</span>
         </div>
       )}
 
-      {/* Indian Railways Mission Control Top Bar */}
-      <header className="bg-slate-950 border-b border-slate-800/80 sticky top-0 z-40 shadow-xl backdrop-blur-md">
+      {/* Main Top Header */}
+      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-18 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
-            {/* Identity & Crest */}
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 bg-gradient-to-br from-blue-700 via-blue-900 to-slate-900 rounded-xl border border-sky-400/40 p-2 flex items-center justify-center shadow-lg shadow-blue-950/60">
-                <Train className="w-7 h-7 text-sky-400" />
+          <div className="py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            {/* Identity */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-600/10 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400 shadow-sm">
+                <Train className="w-5 h-5" />
               </div>
 
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-sm md:text-base tracking-tight text-white uppercase font-mono">
-                    NORTH CENTRAL RAILWAY
-                  </span>
-                  <span className="bg-blue-600/30 text-blue-300 border border-blue-500/40 text-[10px] font-bold px-2 py-0.5 rounded font-mono">
-                    PRAYAGRAJ DIVISION
+                  <h1 className="font-extrabold text-base tracking-tight text-white">
+                    AI Railway Block Planner
+                  </h1>
+                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Live Corridor Active
                   </span>
                 </div>
-                <div className="text-xs text-slate-400 flex items-center gap-2 font-mono mt-0.5">
-                  <span>COA 2.0 • AI Automatic Corridor Block Planner</span>
+                <div className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+                  <span>Prayagraj Division (NCR)</span>
                   <span className="text-slate-600">•</span>
-                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Central Control Room
-                  </span>
+                  <span>191 km High-Density Trunk Route</span>
                 </div>
               </div>
             </div>
 
-            {/* Live Clock & Action Buttons */}
-            <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Actions Bar */}
+            <div className="flex items-center gap-2 flex-wrap">
               {/* Live IST Clock */}
-              <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl font-mono text-xs">
-                <Clock className="w-3.5 h-3.5 text-sky-400" />
-                <span className="text-slate-200 font-bold tracking-wider">{currentTime || '00:00:00'} IST</span>
+              <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg text-xs font-mono text-slate-300">
+                <Clock className="w-3.5 h-3.5 text-blue-400" />
+                <span>{currentTime || '00:00:00'} IST</span>
               </div>
 
-              {/* Official Bulletin Export (Print/CSV) */}
+              {/* Form T/409 Bulletin */}
               <button
                 onClick={() => setIsBulletinModalOpen(true)}
-                className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow transition-all cursor-pointer"
+                className="bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer font-medium"
               >
-                <FileText className="w-3.5 h-3.5 text-amber-400" />
-                <span>Form T/409 Bulletin</span>
+                <FileText className="w-3.5 h-3.5 text-slate-400" />
+                <span>Form T/409 Circular</span>
               </button>
 
-              {/* Simulate Train Delay & Conflict Button */}
-              <button
-                onClick={() => setIsConflictModalOpen(true)}
-                className="bg-slate-900 hover:bg-slate-800 text-slate-200 border border-rose-500/40 hover:border-rose-400 font-semibold text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow transition-all cursor-pointer"
-              >
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-                <span>Simulate Train Delay</span>
-              </button>
-
-              {/* Emergency Defect Injector Button */}
+              {/* Report Defect Button */}
               <button
                 onClick={() => setIsInjectModalOpen(true)}
-                className="bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg shadow-rose-950/50 transition-all cursor-pointer"
+                className="bg-slate-950 hover:bg-slate-800 text-amber-300 border border-amber-600/40 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer font-medium"
               >
-                <AlertOctagon className="w-3.5 h-3.5" />
-                <span>Report Defect</span>
+                <PlusCircle className="w-3.5 h-3.5 text-amber-400" />
+                <span>+ Report Defect</span>
+              </button>
+
+              {/* Schedule Future Mega Block Button */}
+              <button
+                onClick={() => setIsScheduleModalOpen(true)}
+                className="bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-500/50 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer font-bold shadow-sm shadow-purple-950"
+              >
+                <CalendarPlus className="w-3.5 h-3.5 text-purple-400" />
+                <span>+ Schedule Mega Block</span>
               </button>
 
               {/* Run Optimizer Button */}
               <button
                 onClick={handleGeneratePlan}
                 disabled={optimizing}
-                className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs px-4 py-1.5 rounded-xl flex items-center gap-2 shadow-lg shadow-sky-950/60 disabled:opacity-50 transition-all cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-1.5 rounded-lg flex items-center gap-1.5 disabled:opacity-50 transition-colors cursor-pointer font-bold shadow-sm shadow-blue-600/30"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${optimizing ? 'animate-spin' : ''}`} />
-                {optimizing ? 'Optimizing...' : 'Run AI Optimizer'}
+                <span>{optimizing ? 'Optimizing Plan...' : 'Run AI Optimizer'}</span>
               </button>
             </div>
           </div>
 
-          {/* Mission Control Tabs */}
-          <div className="flex gap-4 border-t border-slate-800/80 text-xs overflow-x-auto">
+          {/* Navigation Tabs */}
+          <div className="flex gap-2 border-t border-slate-800 text-xs overflow-x-auto pt-1">
             <button
               onClick={() => setActiveTab('GANTT')}
-              className={`py-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              className={`py-2.5 px-3 font-semibold border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === 'GANTT'
-                  ? 'border-sky-400 text-sky-400 font-bold'
+                  ? 'border-blue-500 text-white bg-blue-500/5 rounded-t-lg'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Clock className="w-4 h-4" />
-              24-Hour Corridor Possession Matrix
+              <Calendar className="w-4 h-4 text-blue-400" />
+              <span>Schedule & Approvals</span>
             </button>
+
             <button
               onClick={() => setActiveTab('MIMIC')}
-              className={`py-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              className={`py-2.5 px-3 font-semibold border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === 'MIMIC'
-                  ? 'border-sky-400 text-sky-400 font-bold'
+                  ? 'border-blue-500 text-white bg-blue-500/5 rounded-t-lg'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Radio className="w-4 h-4 text-emerald-400" />
-              Live Route Mimic & Digital Twin
+              <Navigation className="w-4 h-4 text-emerald-400" />
+              <span>Visual Live Map</span>
             </button>
+
             <button
               onClick={() => setActiveTab('WHATIF')}
-              className={`py-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              className={`py-2.5 px-3 font-semibold border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === 'WHATIF'
-                  ? 'border-sky-400 text-sky-400 font-bold'
+                  ? 'border-blue-500 text-white bg-blue-500/5 rounded-t-lg'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Sliders className="w-4 h-4 text-amber-400" />
-              Operational "What-If" Simulator
+              <Sliders className="w-4 h-4 text-purple-400" />
+              <span>What-If Test Bench</span>
             </button>
+
             <button
               onClick={() => setActiveTab('TASKS')}
-              className={`py-3 font-semibold border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              className={`py-2.5 px-3 font-semibold border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === 'TASKS'
-                  ? 'border-sky-400 text-sky-400 font-bold'
+                  ? 'border-blue-500 text-white bg-blue-500/5 rounded-t-lg'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Layers className="w-4 h-4 text-purple-400" />
-              Integrated Defect Inventory ({tasks.length})
+              <Layers className="w-4 h-4 text-amber-400" />
+              <span>Repair Demands ({tasks.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('COPILOT')}
+              className={`py-2.5 px-3 font-semibold border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+                activeTab === 'COPILOT'
+                  ? 'border-blue-500 text-white bg-blue-500/5 rounded-t-lg'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Bot className="w-4 h-4 text-sky-400" />
+              <span>AI Chat Assistant</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Mission Control Dashboard Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
-        {/* Active Train Delay Conflict Banner */}
-        {activeConflict && (
-          <ConflictBanner
-            conflict={activeConflict}
-            onResolve={handleResolveConflict}
-            onClear={handleClearConflict}
-            isResolving={isResolvingConflict}
+      {/* Main Content Area */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 w-full space-y-5">
+        {/* The Big Picture Visual Diagram (Before vs After AI) */}
+        <VisualHero />
+
+        {/* Collapsible 3-Step Quick Guide */}
+        <QuickGuide />
+
+        {/* Telemetry KPI Cards */}
+        <KpiCards analytics={analytics} />
+
+        {/* Tab: IR-Copilot AI Assistant */}
+        {activeTab === 'COPILOT' && (
+          <RailCopilot
+            blocks={blocks}
+            analytics={analytics}
+            onPlanUpdated={(newBlocks, newAnalytics) => {
+              setBlocks(newBlocks);
+              setAnalytics(newAnalytics);
+              showToast('Schedule re-optimized by AI Assistant.');
+            }}
           />
         )}
 
-        {/* Real-Time Telemetry KPI Gauges */}
-        <KpiCards analytics={analytics} />
-
-        {/* Tab 1: Corridor Gantt Possession Matrix */}
+        {/* Tab: Corridor Gantt Matrix */}
         {activeTab === 'GANTT' && (
           <CorridorGantt
             sections={sections}
@@ -398,7 +381,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* Tab 2: Live Route Mimic & Track Schematics */}
+        {/* Tab: Route Mimic */}
         {activeTab === 'MIMIC' && (
           <TrackSchematic
             sections={sections}
@@ -407,12 +390,12 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* Tab 3: What-If Operational Trade-off Simulator */}
+        {/* Tab: What-If Simulator */}
         {activeTab === 'WHATIF' && (
           <WhatIfSimulator sections={sections} blocks={blocks} />
         )}
 
-        {/* Tab 4: Defect Inventory */}
+        {/* Tab: Defect Inventory */}
         {activeTab === 'TASKS' && <TaskInventory tasks={tasks} />}
       </main>
 
@@ -424,7 +407,7 @@ export const App: React.FC = () => {
         onReject={handleRejectBlock}
       />
 
-      {/* Emergency Defect Injector Modal */}
+      {/* Defect Injector Modal */}
       <InjectDefectModal
         sections={sections}
         isOpen={isInjectModalOpen}
@@ -432,7 +415,7 @@ export const App: React.FC = () => {
         onDefectInjected={handleDefectInjected}
       />
 
-      {/* Official Indian Railways Form T/409 Bulletin Modal */}
+      {/* Official Form T/409 Bulletin Modal */}
       <OfficialBulletinModal
         isOpen={isBulletinModalOpen}
         onClose={() => setIsBulletinModalOpen(false)}
@@ -440,12 +423,12 @@ export const App: React.FC = () => {
         sections={sections}
       />
 
-      {/* Train Delay Conflict Simulator Modal */}
-      <ConflictSimulatorModal
-        isOpen={isConflictModalOpen}
-        onClose={() => setIsConflictModalOpen(false)}
+      {/* Advance Mega Block Reservation Modal */}
+      <ScheduleFutureBlockModal
         sections={sections}
-        onInjectConflict={handleInjectConflict}
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        onBlockScheduled={handleFutureBlockScheduled}
       />
     </div>
   );

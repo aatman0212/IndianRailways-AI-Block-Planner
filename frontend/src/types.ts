@@ -65,16 +65,25 @@ export interface PlanAnalytics {
   total_disruption_impact: number;
 }
 
-export interface TrafficConflict {
-  conflict_id: string;
-  train_number: string;
-  train_name: string;
-  delay_minutes: number;
-  section_id: string;
-  section_name: string;
-  conflicting_block_id: string;
-  eta: string;
-  message: string;
-  is_resolved: boolean;
-  resolution_note?: string;
+export interface DelayImpact {
+  total_block_minutes: number;
+  saved_shutdown_minutes: number;
+  passenger_delay_minutes_saved: number;
+  trains_protected_count: number;
+  freight_demurrage_saved_inr: number;
+  punctuality_preservation_pct: number;
+  co_scheduled_efficiency: string;
+}
+
+export interface CopilotMessage {
+  id: string;
+  sender: 'user' | 'assistant';
+  text: string;
+  timestamp: string;
+  action_type?: string;
+  tools_executed?: Array<{
+    tool: string;
+    params: any;
+    result: any;
+  }>;
 }
