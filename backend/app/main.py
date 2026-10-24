@@ -534,6 +534,39 @@ def get_block_memo(block_id: str):
     raise HTTPException(status_code=404, detail="Block not found")
 
 
+class GeminiKeyPayload(BaseModel):
+    gemini_api_key: str
+
+
+@app.get("/api/copilot/gemini-status")
+def get_gemini_status():
+    """Checks whether Google Gemini API is configured for advanced railway Q&A."""
+    from backend.app.copilot import get_gemini_api_key
+    key = get_gemini_api_key()
+    return {
+        "configured": bool(key),
+        "key_preview": f"AIza...{key[-4:]}" if key and len(key) > 8 else None,
+        "models": ["gemini-2.5-flash", "gemini-1.5-flash"],
+        "status": "active" if key else "unconfigured",
+    }
+
+
+@app.post("/api/copilot/gemini-key")
+def update_gemini_key(payload: GeminiKeyPayload):
+    """Registers and activates Google Gemini API key for IR-Copilot."""
+    from backend.app.copilot import save_gemini_api_key
+    key = payload.gemini_api_key.strip()
+    if not key:
+        raise HTTPException(status_code=400, detail="API Key cannot be blank")
+    
+    success = save_gemini_api_key(key)
+    return {
+        "status": "success" if success else "error",
+        "configured": True,
+        "message": "Google Gemini API key registered and activated for IR-Copilot.",
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

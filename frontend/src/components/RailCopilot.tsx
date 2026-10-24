@@ -9,6 +9,10 @@ import {
   Sparkles,
   HelpCircle,
   FileText,
+  Key,
+  Check,
+  ExternalLink,
+  X,
 } from 'lucide-react';
 import { ScheduledBlock, PlanAnalytics, DelayImpact, CopilotMessage } from '../types';
 
@@ -199,15 +203,64 @@ Click any suggestion chip below or type your instruction in plain English.`,
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [delayImpact, setDelayImpact] = useState<DelayImpact | null>(null);
+  const [geminiConfigured, setGeminiConfigured] = useState<boolean>(false);
+  const [showKeyModal, setShowKeyModal] = useState<boolean>(false);
+  const [geminiKeyInput, setGeminiKeyInput] = useState<string>('');
+  const [savingKey, setSavingKey] = useState<boolean>(false);
+  const [keySaveMsg, setKeySaveMsg] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fetch initial delay impact metrics
+  // Fetch initial delay impact metrics & Gemini configuration status
   useEffect(() => {
     fetch('/api/copilot/delay-impact')
       .then((res) => res.json())
       .then((data) => setDelayImpact(data))
       .catch((err) => console.error('Failed to fetch delay impact:', err));
+
+    fetch('/api/copilot/gemini-status')
+      .then((res) => res.json())
+      .then((data) => setGeminiConfigured(Boolean(data.configured)))
+      .catch((err) => console.error('Failed to fetch gemini status:', err));
   }, [blocks.length]);
+
+  const handleSaveGeminiKey = async () => {
+    const k = geminiKeyInput.trim();
+    if (!k) return;
+    setSavingKey(true);
+    setKeySaveMsg(null);
+    try {
+      const res = await fetch('/api/copilot/gemini-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gemini_api_key: k }),
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        setGeminiConfigured(true);
+        setKeySaveMsg('✓ Google Gemini API Key activated successfully!');
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `gemini_ready_${Date.now()}`,
+            sender: 'assistant',
+            text: `### ✨ Google Gemini AI Connected Successfully!\n\nIR-Copilot is now augmented with **Google Gemini**. You can now ask any question about Indian Railways operations, technical manuals, signaling, or open-ended inquiries, and receive answers in real-time.`,
+            timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+        setTimeout(() => {
+          setShowKeyModal(false);
+          setKeySaveMsg(null);
+          setGeminiKeyInput('');
+        }, 1200);
+      } else {
+        setKeySaveMsg(`Failed: ${data.detail || 'Could not save key'}`);
+      }
+    } catch (err: any) {
+      setKeySaveMsg(`Network error: ${err.message}`);
+    } finally {
+      setSavingKey(false);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -297,40 +350,56 @@ Click any suggestion chip below or type your instruction in plain English.`,
           </div>
         </div>
 
-        {/* Live Telemetry Ribbon */}
-        {delayImpact && (
-          <div className="flex items-center gap-2 flex-wrap text-xs">
-            <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2">
-              <Clock className="w-3.5 h-3.5 text-blue-400" />
-              <div>
-                <span className="text-[10px] text-slate-500 block uppercase font-medium leading-none">Delay Saved</span>
-                <span className="font-bold text-slate-200 font-mono">
-                  {delayImpact.passenger_delay_minutes_saved} mins
-                </span>
-              </div>
-            </div>
+        <div className="flex items-center gap-2 flex-wrap text-xs">
+          {/* Gemini AI Status & Connect Pill */}
+          <button
+            onClick={() => setShowKeyModal(true)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+              geminiConfigured
+                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/20 shadow-sm'
+                : 'bg-purple-500/20 text-purple-200 border-purple-500/50 hover:bg-purple-500/30 animate-pulse shadow-sm shadow-purple-950'
+            }`}
+            title={geminiConfigured ? 'Google Gemini AI Connected & Active' : 'Connect Google Gemini AI to answer any question'}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+            <span>{geminiConfigured ? '✨ Gemini AI Active' : '🔑 Connect Gemini AI'}</span>
+          </button>
 
-            <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2">
-              <Train className="w-3.5 h-3.5 text-emerald-400" />
-              <div>
-                <span className="text-[10px] text-slate-500 block uppercase font-medium leading-none">Trains Protected</span>
-                <span className="font-bold text-slate-200 font-mono">
-                  {delayImpact.trains_protected_count} Express
-                </span>
+          {/* Live Telemetry Ribbon */}
+          {delayImpact && (
+            <div className="flex items-center gap-2 flex-wrap text-xs">
+              <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-blue-400" />
+                <div>
+                  <span className="text-[10px] text-slate-500 block uppercase font-medium leading-none">Delay Saved</span>
+                  <span className="font-bold text-slate-200 font-mono">
+                    {delayImpact.passenger_delay_minutes_saved} mins
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2">
-              <TrendingDown className="w-3.5 h-3.5 text-purple-400" />
-              <div>
-                <span className="text-[10px] text-slate-500 block uppercase font-medium leading-none">Demurrage Saved</span>
-                <span className="font-bold text-slate-200 font-mono">
-                  ₹{delayImpact.freight_demurrage_saved_inr.toLocaleString('en-IN')}
-                </span>
+              <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2">
+                <Train className="w-3.5 h-3.5 text-emerald-400" />
+                <div>
+                  <span className="text-[10px] text-slate-500 block uppercase font-medium leading-none">Trains Protected</span>
+                  <span className="font-bold text-slate-200 font-mono">
+                    {delayImpact.trains_protected_count} Express
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2">
+                <TrendingDown className="w-3.5 h-3.5 text-purple-400" />
+                <div>
+                  <span className="text-[10px] text-slate-500 block uppercase font-medium leading-none">Demurrage Saved</span>
+                  <span className="font-bold text-slate-200 font-mono">
+                    ₹{delayImpact.freight_demurrage_saved_inr.toLocaleString('en-IN')}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Messages Scroll Area */}
@@ -445,6 +514,95 @@ Click any suggestion chip below or type your instruction in plain English.`,
           </button>
         </form>
       </div>
+
+      {/* Google Gemini API Key Modal */}
+      {showKeyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="bg-slate-900 border border-slate-700 w-full max-w-md rounded-2xl shadow-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/30">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white">Connect Google Gemini AI</h3>
+                  <p className="text-[11px] text-slate-400">Answer any Indian Railways or open-ended operational question</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <p className="text-slate-300 leading-relaxed">
+                When you ask a question outside our local corridor manuals, IR-Copilot will query <strong>Google Gemini AI</strong> with specialized Indian Railways operational grounding.
+              </p>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">
+                  Google Gemini API Key
+                </label>
+                <input
+                  type="password"
+                  value={geminiKeyInput}
+                  onChange={(e) => setGeminiKeyInput(e.target.value)}
+                  placeholder="AIzaSy..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-500 font-mono"
+                />
+              </div>
+
+              {keySaveMsg && (
+                <div className={`p-2.5 rounded-xl text-xs font-medium border ${
+                  keySaveMsg.startsWith('✓')
+                    ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
+                    : 'bg-red-950/60 border-red-500/40 text-red-300'
+                }`}>
+                  {keySaveMsg}
+                </div>
+              )}
+
+              <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 space-y-1.5 text-[11px] text-slate-400">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-slate-300">Need a free API Key?</span>
+                  <a
+                    href="https://aistudio.google.com/app/apikey"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1"
+                  >
+                    <span>Get Key from Google AI Studio</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <p>Google offers a free tier (15 requests/min) with no credit card required.</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setShowKeyModal(false)}
+                className="px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-semibold text-slate-400 hover:text-slate-200 cursor-pointer transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveGeminiKey}
+                disabled={!geminiKeyInput.trim() || savingKey}
+                className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all disabled:opacity-40 cursor-pointer flex items-center gap-1.5 shadow-md shadow-purple-600/30"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{savingKey ? 'Connecting...' : 'Save & Activate'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

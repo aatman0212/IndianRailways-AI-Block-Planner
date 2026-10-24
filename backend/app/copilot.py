@@ -10,6 +10,12 @@ from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
 import json
 import re
+import os
+from pathlib import Path
+import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from backend.app.models import (
     Department,
@@ -23,6 +29,113 @@ from backend.app.models import (
 )
 from backend.app.prioritization import TaskPrioritizer
 from backend.app.optimizer import BlockPlanningOptimizer
+
+
+# ============================================================================
+# GOOGLE GEMINI AI INTEGRATION ENGINE
+# ============================================================================
+
+def get_gemini_api_key() -> Optional[str]:
+    """Retrieves Google Gemini API key from environment or .env file."""
+    load_dotenv()
+    return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+
+def save_gemini_api_key(key: str) -> bool:
+    """Saves Google Gemini API key to environment and persists to .env file."""
+    key = key.strip()
+    if not key:
+        return False
+    os.environ["GEMINI_API_KEY"] = key
+    try:
+        env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+        lines = []
+        if env_path.exists():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                if not line.startswith("GEMINI_API_KEY=") and not line.startswith("GOOGLE_API_KEY="):
+                    lines.append(line)
+        lines.append(f"GEMINI_API_KEY={key}")
+        env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return True
+    except Exception as e:
+        print("Warning: Could not persist to .env:", e)
+        return True
+
+
+def call_gemini_api(
+    user_query: str,
+    corridor_context: Optional[str] = None,
+    recent_plan_summary: Optional[str] = None,
+) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Calls Google Gemini API for questions outside local rulebooks.
+    Uses google.genai official SDK with fallback to direct HTTP REST via httpx.
+    Returns (response_text, error_or_status).
+    """
+    api_key = get_gemini_api_key()
+    if not api_key:
+        return None, "NO_API_KEY"
+
+    system_instruction = (
+        "You are IR-Copilot, an expert AI railway operations and engineering advisor for Indian Railways (Ministry of Railways, Government of India).\n\n"
+        "Your core knowledge covers:\n"
+        "1. Indian Railways Official Codified Rulebooks: General & Subsidiary Rules (G&SR), Indian Railways Permanent Way Manual (IRPWM), AC Traction Manual (ACTM), Signal Engineering Manual (SEM), and Operating Directives.\n"
+        "2. Corridor Block Planning & Traffic Engineering: Mega Blocks, Shadow Blocks, Night Lulls (01:00-05:00), Temporary Single Line Working (TSLW under G&SR 15.09), Caution Orders (Form T/409), Disconnection Memos (Form S&T T/351).\n"
+        "3. Civil Track Maintenance: Thermit welding (Para 605), LWR/CWR de-stressing, Mechanized tamping (CSM/BCM), USFD flaw testing, joggled fish-plates (Para 610).\n"
+        "4. Electrical & Signaling: 25kV 50Hz OHE isolation, neutral sections, discharge rods, Electronic Interlocking (EI), axle counters, track circuits.\n"
+        "5. Modern Systems: Kavach (TCAS), Vande Bharat Express operations, Mission Raftaar, DFCCIL freight corridors.\n\n"
+        "Active Corridor Environment:\n"
+        f"- Route: Prayagraj Division (North Central Railway), 191 km high-density trunk corridor (Prayagraj Junction to Kanpur Central).\n"
+        f"- Infrastructure: Double-line UP Main & DOWN Main with Automatic Block Signaling, 130 km/h sectional speed, 25kV AC traction.\n"
+        f"{f'- Current Schedule Status: {recent_plan_summary}' if recent_plan_summary else ''}\n\n"
+        "Instructions:\n"
+        "- Answer authoritatively, practically, and concisely.\n"
+        "- Format using clean GitHub Markdown with clear headings, bullet points, and bold keywords.\n"
+        "- Always cite the official Indian Railways rule, manual chapter, or standard operational procedure where relevant.\n"
+        "- If asked an open-ended railway engineering or operational question, explain step-by-step with safety precautions."
+    )
+
+    # Attempt 1: Using google-genai official SDK
+    try:
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        for model_candidate in ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.0-flash"]:
+            try:
+                response = client.models.generate_content(
+                    model=model_candidate,
+                    contents=user_query,
+                    config={"system_instruction": system_instruction},
+                )
+                if response and response.text:
+                    return response.text.strip(), None
+            except Exception:
+                continue
+    except Exception:
+        pass
+
+    # Attempt 2: Direct HTTP REST with httpx
+    try:
+        models_to_try = ["gemini-1.5-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-pro"]
+        for model_name in models_to_try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+            payload = {
+                "systemInstruction": {"parts": [{"text": system_instruction}]},
+                "contents": [{"parts": [{"text": user_query}]}],
+                "generationConfig": {"temperature": 0.4, "maxOutputTokens": 1200},
+            }
+            with httpx.Client(timeout=15.0) as http_client:
+                r = http_client.post(url, json=payload)
+                if r.status_code == 200:
+                    data = r.json()
+                    parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+                    if parts and "text" in parts[0]:
+                        return parts[0]["text"].strip(), None
+                elif r.status_code == 400 and "API_KEY_INVALID" in r.text:
+                    return None, "INVALID_API_KEY"
+    except Exception as http_err:
+        return None, str(http_err)
+
+    return None, "FAILED_ALL_MODELS"
 
 
 # ============================================================================
@@ -395,69 +508,70 @@ OFFICIAL_RULEBOOK_KNOWLEDGE = [
 class RailwayRulebookRAG:
     """Retrieves relevant Indian Railways regulatory clauses and drafts official memos."""
 
+    STOPWORDS = {
+        "what", "is", "the", "on", "in", "to", "for", "and", "of", "with", "a", "an",
+        "are", "how", "why", "can", "does", "do", "did", "tell", "me", "about",
+        "past", "from", "at", "by", "this", "that", "it", "any"
+    }
+
     @classmethod
-    def search(cls, query: str, top_k: int = 2) -> List[Dict[str, Any]]:
+    def search_with_scores(cls, query: str, top_k: int = 2) -> List[Tuple[float, Dict[str, Any]]]:
         """
         High-precision retrieval over Indian Railways regulatory knowledge base.
         Uses exact rule ID matches, manual acronyms, domain keywords, and token overlaps.
+        Returns tuples of (score, entry).
         """
         query_clean = query.lower().strip()
-        query_tokens = set(re.findall(r"\w+", query_clean))
+        query_tokens = set(re.findall(r"\w+", query_clean)) - cls.STOPWORDS
         scored_entries: List[Tuple[float, Dict[str, Any]]] = []
 
         for entry in OFFICIAL_RULEBOOK_KNOWLEDGE:
             score = 0.0
 
-            # 1. Exact ID / Para match (highest confidence)
+            # 1. Exact Rule ID match (e.g. "irpwm_605", "actm_207")
             entry_id = entry["id"].lower()
-            para_num = re.sub(r"[^\d]", "", entry["para"])
-            if entry_id in query_clean or (para_num and para_num in query_clean):
+            if entry_id in query_clean:
                 score += 50.0
 
-            # 2. Manual Acronym Match (e.g. IRPWM, ACTM, SEM, G&SR)
+            # 2. Specific Para / Number match (e.g. "para 605", "rule 15.06", "t/409", "610")
+            para_num = re.sub(r"[^\d.]", "", entry["para"])
+            if para_num and len(para_num) >= 3:
+                if re.search(rf"\b{re.escape(para_num)}\b", query_clean):
+                    score += 40.0
+
+            # 3. Manual Acronym Match (IRPWM, ACTM, SEM, G&SR)
             manual_lower = entry["manual"].lower()
-            if "irpwm" in query_clean and "irpwm" in manual_lower:
+            if re.search(r"\birpwm\b", query_clean) and "irpwm" in manual_lower:
                 score += 25.0
-            elif "actm" in query_clean and "actm" in manual_lower:
+            elif re.search(r"\bactm\b", query_clean) and "actm" in manual_lower:
                 score += 25.0
-            elif "sem" in query_clean and "sem" in manual_lower:
+            elif re.search(r"\bsem\b", query_clean) and "sem" in manual_lower:
                 score += 25.0
-            elif ("g&sr" in query_clean or "gsr" in query_clean) and "g&sr" in manual_lower:
+            elif re.search(r"\b(?:g&sr|gsr)\b", query_clean) and "g&sr" in manual_lower:
                 score += 25.0
 
-            # 3. Dedicated Topic Keywords
+            # 4. Multi-word dedicated domain keywords (only if whole keyword is present)
             for kw in entry["keywords"]:
                 kw_lower = kw.lower()
-                if kw_lower in query_clean:
+                if len(kw_lower) > 3 and re.search(rf"\b{re.escape(kw_lower)}\b", query_clean):
                     score += 15.0
 
-            # 4. Word overlap in title
-            title_tokens = set(re.findall(r"\w+", entry["title"].lower()))
+            # 5. Non-stopword overlap in title
+            title_tokens = set(re.findall(r"\w+", entry["title"].lower())) - cls.STOPWORDS
             title_overlap = query_tokens.intersection(title_tokens)
-            score += len(title_overlap) * 4.0
+            score += len(title_overlap) * 3.0
 
-            # 5. Word overlap in content
-            content_tokens = set(re.findall(r"\w+", entry["content"].lower()))
-            content_overlap = query_tokens.intersection(content_tokens)
-            score += len(content_overlap) * 1.0
-
-            if score >= 10.0:
+            if score >= 25.0:
                 scored_entries.append((score, entry))
 
         # Sort descending by relevance score
         scored_entries.sort(key=lambda x: x[0], reverse=True)
+        return scored_entries[:top_k]
 
-        if not scored_entries:
-            # Fallback based on broad topic matching rather than random welding
-            if any(w in query_clean for w in ["priority", "score", "calculate", "factor"]):
-                return [e for e in OFFICIAL_RULEBOOK_KNOWLEDGE if e["id"] == "IR_PRIORITY_MCDA"]
-            elif any(w in query_clean for w in ["mega", "block", "lull", "shadow"]):
-                return [e for e in OFFICIAL_RULEBOOK_KNOWLEDGE if e["id"] == "IR_MEGABLOCK_POLICY"]
-            elif any(w in query_clean for w in ["rag", "retrieval", "chatbot", "work"]):
-                return [e for e in OFFICIAL_RULEBOOK_KNOWLEDGE if e["id"] == "IR_RAG_ARCHITECTURE"]
-            return []
-
-        return [item[1] for item in scored_entries[:top_k]]
+    @classmethod
+    def search(cls, query: str, top_k: int = 2) -> List[Dict[str, Any]]:
+        scored = cls.search_with_scores(query, top_k=top_k)
+        return [item[1] for item in scored]
 
     @classmethod
     def generate_caution_order_draft(cls, block: ScheduledBlock, section: Optional[Section] = None) -> Dict[str, Any]:
@@ -572,11 +686,39 @@ class RailCopilotAgent:
     def process_message(self, user_message: str) -> Dict[str, Any]:
         """
         Main entry point for conversational interactions.
-        Uses exact intent routing and high-precision RAG.
+        Uses exact intent routing, high-precision RAG over Indian Railways manuals,
+        and automatically calls Google Gemini API for any open-ended or unknown questions.
         """
         msg_clean = user_message.strip()
         msg_lower = msg_clean.lower()
         tools_executed: List[Dict[str, Any]] = []
+
+        # -------------------------------------------------------------
+        # Intent 0: Ingest Google Gemini API key if user provides it directly in chat
+        # -------------------------------------------------------------
+        if (msg_clean.startswith("AIzaSy") and len(msg_clean) >= 35) or ("aizasy" in msg_clean and len(msg_clean) >= 35):
+            key_match = re.search(r"AIzaSy[A-Za-z0-9_-]{33}", msg_clean)
+            key_to_save = key_match.group(0) if key_match else msg_clean
+            save_gemini_api_key(key_to_save)
+            tools_executed.append({
+                "tool": "gemini_api_key_registration",
+                "params": {"key_preview": f"AIzaSy...{key_to_save[-4:]}"},
+                "result": "Saved and activated Google Gemini API key in environment and .env configuration.",
+            })
+            reply_text = (
+                "### ✨ Google Gemini AI Key Activated!\n\n"
+                "Your Google Gemini API key has been securely configured. "
+                "**IR-Copilot** is now augmented with live Gemini AI reasoning.\n\n"
+                "You can now ask **any question** about Indian Railways operations, signaling protocols, "
+                "technical manuals (IRPWM, ACTM, SEM, G&SR), Kavach TCAS, train regulations, or corridor maintenance!"
+            )
+            return {
+                "reply": reply_text,
+                "action_type": "GEMINI_KEY_SAVED",
+                "tools_executed": tools_executed,
+                "timestamp": datetime.now().isoformat(),
+                "current_plan_count": len(self.state.get("current_plan", [])),
+            }
 
         # -------------------------------------------------------------
         # Intent 1: "How does RAG work?" / RAG Architecture Query
@@ -786,39 +928,9 @@ class RailCopilotAgent:
             }
 
         # -------------------------------------------------------------
-        # Intent 5: Statutory Rulebook Search & Caution Orders
+        # Intent 5: Delay Impact & Punctuality KPI Metrics
         # -------------------------------------------------------------
-        rule_hits = RailwayRulebookRAG.search(user_message, top_k=2)
-        if rule_hits:
-            tools_executed.append({
-                "tool": "railway_rulebook_rag_lookup",
-                "params": {"query": user_message},
-                "result": f"Retrieved {len(rule_hits)} official clauses from rulebook knowledge base.",
-            })
-
-            reply_text = "### 📜 Indian Railways Statutory Rulebook Assessment\n\n"
-            for hit in rule_hits:
-                reply_text += (
-                    f"**{hit['manual']} — {hit['para']}**\n"
-                    f"*_{hit['title']}_*\n\n"
-                    f"> {hit['content']}\n\n"
-                    f"• **Statutory Safety Buffer:** `{hit['statutory_buffer_min']} Minutes`\n"
-                    f"• **Speed Restriction Ceiling:** `{hit['speed_restriction_kmh']} km/h`\n\n"
-                    f"---\n"
-                )
-            reply_text += "All corridor block allocations strictly observe these mandatory isolation, safety flags, and settling buffers."
-            return {
-                "reply": reply_text,
-                "action_type": "RULEBOOK_RAG",
-                "tools_executed": tools_executed,
-                "timestamp": datetime.now().isoformat(),
-                "current_plan_count": len(self.state.get("current_plan", [])),
-            }
-
-        # -------------------------------------------------------------
-        # Intent 6: Delay Impact & KPI Metrics
-        # -------------------------------------------------------------
-        if any(p in msg_lower for p in ["delay", "saving", "savings", "kpi", "punctuality", "demurrage", "minutes saved"]):
+        if any(p in msg_lower for p in ["delay saved", "saving", "savings", "demurrage", "minutes saved", "punctuality index", "delay report"]):
             delay_metrics = DelayPropagationModel.calculate_impact(
                 self.state.get("current_plan", []),
                 len(self.state.get("tasks", {})),
@@ -848,9 +960,9 @@ class RailCopilotAgent:
             }
 
         # -------------------------------------------------------------
-        # Intent 7: Corridor Sections & Route Infrastructure
+        # Intent 6: Corridor Infrastructure & Sections
         # -------------------------------------------------------------
-        if any(p in msg_lower for p in ["section", "corridor", "station", "route", "km"]):
+        if any(p in msg_lower for p in ["corridor section", "list stations", "station list", "route km", "track infrastructure"]):
             sec_list = list(self.state.get("sections", {}).values())
             tools_executed.append({
                 "tool": "get_corridor_sections",
@@ -876,29 +988,113 @@ class RailCopilotAgent:
             }
 
         # -------------------------------------------------------------
-        # Fallback General Assistant (Structured & Contextual)
+        # Intent 7: High-Confidence Statutory Rulebook Lookup
         # -------------------------------------------------------------
+        scored_rule_hits = RailwayRulebookRAG.search_with_scores(user_message, top_k=2)
+        top_score = scored_rule_hits[0][0] if scored_rule_hits else 0.0
+
+        if scored_rule_hits and top_score >= 35.0:
+            rule_hits = [item[1] for item in scored_rule_hits]
+            tools_executed.append({
+                "tool": "railway_rulebook_rag_lookup",
+                "params": {"query": user_message, "confidence_score": top_score},
+                "result": f"Retrieved {len(rule_hits)} official clauses from rulebook knowledge base.",
+            })
+
+            reply_text = "### 📜 Indian Railways Statutory Rulebook Assessment\n\n"
+            for hit in rule_hits:
+                reply_text += (
+                    f"**{hit['manual']} — {hit['para']}**\n"
+                    f"*_{hit['title']}_*\n\n"
+                    f"> {hit['content']}\n\n"
+                    f"• **Statutory Safety Buffer:** `{hit['statutory_buffer_min']} Minutes`\n"
+                    f"• **Speed Restriction Ceiling:** `{hit['speed_restriction_kmh']} km/h`\n\n"
+                    f"---\n"
+                )
+            reply_text += "All corridor block allocations strictly observe these mandatory isolation, safety flags, and settling buffers."
+            return {
+                "reply": reply_text,
+                "action_type": "RULEBOOK_RAG",
+                "tools_executed": tools_executed,
+                "timestamp": datetime.now().isoformat(),
+                "current_plan_count": len(self.state.get("current_plan", [])),
+            }
+
+        # -------------------------------------------------------------
+        # Intent 8: GOOGLE GEMINI AI (For all open-ended / unknown railway questions)
+        # -------------------------------------------------------------
+        plan_summary = f"{len(self.state.get('current_plan', []))} active blocks on Prayagraj-Kanpur trunk corridor"
+        gemini_reply, gemini_status = call_gemini_api(user_message, recent_plan_summary=plan_summary)
+
+        if gemini_reply:
+            tools_executed.append({
+                "tool": "google_gemini_ai_query",
+                "params": {"query": user_message},
+                "result": "Query answered via Google Gemini AI with Indian Railways operational context.",
+            })
+            reply_text = (
+                f"{gemini_reply}\n\n"
+                f"---\n"
+                f"✨ *Powered by Google Gemini AI • Indian Railways Operations & Engineering Advisor*"
+            )
+            return {
+                "reply": reply_text,
+                "action_type": "GEMINI_AI_ANSWER",
+                "tools_executed": tools_executed,
+                "timestamp": datetime.now().isoformat(),
+                "current_plan_count": len(self.state.get("current_plan", [])),
+            }
+
+        if gemini_status == "INVALID_API_KEY":
+            tools_executed.append({
+                "tool": "google_gemini_ai_error",
+                "params": {"status": "INVALID_API_KEY"},
+                "result": "Gemini API key rejected by Google.",
+            })
+            reply_text = (
+                "### ⚠️ Google Gemini API Key Invalid\n\n"
+                "The configured `GEMINI_API_KEY` was rejected by Google's API service. "
+                "Please verify your key from [Google AI Studio](https://aistudio.google.com/app/apikey) "
+                "and update it by clicking **'Connect Gemini AI'** at the top or pasting it here."
+            )
+            return {
+                "reply": reply_text,
+                "action_type": "GEMINI_ERROR",
+                "tools_executed": tools_executed,
+                "timestamp": datetime.now().isoformat(),
+                "current_plan_count": len(self.state.get("current_plan", [])),
+            }
+
+        # If Gemini key is not configured, show how to enable Gemini + provide closest local guidance
         tools_executed.append({
             "tool": "general_railway_copilot_guidance",
-            "params": {"query": user_message},
-            "result": "Rendered operational guidance and suggested prompts.",
+            "params": {"query": user_message, "gemini_status": gemini_status},
+            "result": "Rendered Gemini activation guide with closest local rule guidance.",
         })
 
+        fallback_rule_text = ""
+        if scored_rule_hits:
+            hit = scored_rule_hits[0][1]
+            fallback_rule_text = (
+                f"\n\n**Closest Local Rulebook Reference:**\n"
+                f"• **{hit['manual']} ({hit['para']}):** *{hit['title']}*\n"
+                f"> {hit['content']}\n"
+            )
+
         reply_text = (
-            f"### 🤖 Indian Railways AI Section Copilot\n\n"
-            f"I am actively monitoring the **Prayagraj — Kanpur Central** corridor ({len(self.state.get('current_plan', []))} active blocks). "
-            f"Here are key questions you can ask me:\n\n"
-            f"1. **RAG Architecture:** *\"How does the RAG engine work?\"*\n"
-            f"2. **Priority Formula:** *\"How is priority calculated?\"*\n"
-            f"3. **Mega Block Policy:** *\"What is a mega block and night lull?\"*\n"
-            f"4. **Rulebook Lookups:** *\"What does IRPWM Para 605 say about thermit welding?\"* or *\"What does ACTM 207 say about OHE power blocks?\"*\n"
-            f"5. **Delay Impact:** *\"How many passenger minutes did bundling save?\"*\n"
-            f"6. **Live Re-Planning:** *\"Train 12424 Rajdhani is 45 min late, replan schedule\"*"
+            f"### 🤖 Google Gemini AI Knowledge Expansion\n\n"
+            f"To answer questions outside the local corridor rulebook (*\"{user_message}\"*), "
+            f"IR-Copilot connects directly to **Google Gemini AI**.\n\n"
+            f"**To enable Google Gemini in 1 step:**\n"
+            f"1. Get a free API key at **[Google AI Studio](https://aistudio.google.com/app/apikey)**.\n"
+            f"2. Paste your API key directly in this chat or click **'Connect Gemini AI'** at the top.\n"
+            f"3. Ask your question again, and IR-Copilot will query Google Gemini with full Indian Railways context!"
+            f"{fallback_rule_text}"
         )
 
         return {
             "reply": reply_text,
-            "action_type": "GENERAL_ASSISTANCE",
+            "action_type": "GEMINI_KEY_REQUIRED",
             "tools_executed": tools_executed,
             "timestamp": datetime.now().isoformat(),
             "current_plan_count": len(self.state.get("current_plan", [])),
