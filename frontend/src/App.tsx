@@ -147,20 +147,44 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleApproveBlock = async (blockId: string, notes: string) => {
+  const handleApproveBlock = async (
+    blockId: string,
+    notes: string,
+    timingOptions?: {
+      executionTiming: 'SCHEDULED' | 'NOW' | 'CUSTOM';
+      customStartTime?: string;
+      customEndTime?: string;
+    }
+  ) => {
     try {
+      const payload: Record<string, any> = {
+        user_name: 'Chief Controller Prayagraj',
+        planner_notes: notes,
+        execution_timing: timingOptions?.executionTiming || 'SCHEDULED',
+      };
+      if (timingOptions?.executionTiming === 'CUSTOM' && timingOptions.customStartTime) {
+        payload.custom_start_time = timingOptions.customStartTime;
+        payload.custom_end_time = timingOptions.customEndTime;
+      }
+
       const res = await fetch(`/api/plan/blocks/${blockId}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_name: 'Chief Controller Prayagraj', planner_notes: notes }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (data.status === 'success') {
         const b = data.block;
         setBlocks((prev) => prev.map((item) => (item.block_id === blockId ? b : item)));
         setSelectedBlock(null);
+        const timingDesc =
+          timingOptions?.executionTiming === 'NOW'
+            ? '🚨 IMMEDIATE POSSESSION APPLIED NOW'
+            : timingOptions?.executionTiming === 'CUSTOM'
+            ? '📅 FUTURE CUSTOM SLOT'
+            : '🕒 SCHEDULED SLOT SANCTIONED';
         showToast(
-          `✓ PERMIT SANCTIONED: Section ${b.section_id} moved to Approved Section! Blocked from ${b.start_time} to ${b.end_time?.includes(' ') ? b.end_time.split(' ')[1] : b.end_time} IST (${b.duration_minutes}m). Caution orders dispatched.`,
+          `✓ ${timingDesc}: Section ${b.section_id} locked! Blocked from ${b.start_time} to ${b.end_time?.includes(' ') ? b.end_time.split(' ')[1] : b.end_time} IST (${b.duration_minutes}m). Caution orders dispatched.`,
           'info'
         );
       }

@@ -325,23 +325,51 @@ class OverrideRequest(BaseModel):
     user_name: str = "Section Controller"
     planner_notes: Optional[str] = None
     new_status: Optional[BlockStatus] = None
+    execution_timing: Optional[str] = "SCHEDULED"  # "NOW", "SCHEDULED", or "CUSTOM"
+    custom_start_time: Optional[str] = None
+    custom_end_time: Optional[str] = None
 
 
 @app.post("/api/plan/blocks/{block_id}/approve")
 def approve_block(block_id: str, payload: OverrideRequest = Body(default_factory=OverrideRequest)):
-    """Human-in-the-loop: Section Controller approves an AI-recommended block."""
+    """Human-in-the-loop: Section Controller approves an AI-recommended block with immediate or scheduled timing."""
     for b in STATE["current_plan"]:
         if b.block_id == block_id:
             b.status = BlockStatus.APPROVED
             b.approved_by = payload.user_name
             b.approval_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # Handle execution timing: NOW vs SCHEDULED vs CUSTOM
+            if payload.execution_timing == "NOW":
+                now_dt = datetime.now()
+                end_dt = now_dt + timedelta(minutes=b.duration_minutes)
+                b.start_time = now_dt.strftime("%Y-%m-%d %H:%M")
+                b.end_time = end_dt.strftime("%Y-%m-%d %H:%M")
+                timing_note = f"[IMMEDIATE POSSESSION] Block applied NOW from {b.start_time} to {b.end_time} IST."
+            elif payload.execution_timing == "CUSTOM" and payload.custom_start_time:
+                b.start_time = payload.custom_start_time
+                if payload.custom_end_time:
+                    b.end_time = payload.custom_end_time
+                else:
+                    try:
+                        s_dt = datetime.strptime(b.start_time, "%Y-%m-%d %H:%M")
+                        b.end_time = (s_dt + timedelta(minutes=b.duration_minutes)).strftime("%Y-%m-%d %H:%M")
+                    except Exception:
+                        pass
+                timing_note = f"[FUTURE SLOT] Sanctioned for custom window {b.start_time} to {b.end_time} IST."
+            else:
+                timing_note = f"[SCHEDULED SLOT] Sanctioned for planned window {b.start_time} to {b.end_time} IST."
+
             if payload.planner_notes:
-                b.planner_notes = payload.planner_notes
+                b.planner_notes = f"{timing_note} {payload.planner_notes}"
+            else:
+                b.planner_notes = timing_note
+
             save_state_to_disk()
             return {
                 "status": "success",
                 "block": b,
-                "message": f"Block permit SANCTIONED: Section {b.section_id} scheduled for track possession from {b.start_time} to {b.end_time} IST ({b.duration_minutes} mins). Caution orders issued.",
+                "message": f"Block permit SANCTIONED ({payload.execution_timing}): Section {b.section_id} scheduled for track possession from {b.start_time} to {b.end_time} IST ({b.duration_minutes} mins). Caution orders issued.",
                 "blocked_window": {
                     "section_id": b.section_id,
                     "start_time": b.start_time,
@@ -349,6 +377,7 @@ def approve_block(block_id: str, payload: OverrideRequest = Body(default_factory
                     "duration_minutes": b.duration_minutes,
                     "approved_by": b.approved_by,
                     "sanction_timestamp": b.approval_timestamp,
+                    "timing_mode": payload.execution_timing,
                 },
             }
     raise HTTPException(status_code=404, detail="Block not found")

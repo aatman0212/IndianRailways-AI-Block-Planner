@@ -1,11 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { ScheduledBlock, Department } from '../types';
-import { X, CheckCircle2, XCircle, Layers, ShieldAlert, Zap, Radio, Info, Clock, MapPin, Lightbulb } from 'lucide-react';
+import {
+  X,
+  CheckCircle2,
+  XCircle,
+  Layers,
+  ShieldAlert,
+  Zap,
+  Radio,
+  Info,
+  Clock,
+  MapPin,
+  Lightbulb,
+  AlertTriangle,
+  CalendarPlus,
+  ShieldCheck,
+} from 'lucide-react';
 
 interface Props {
   block: ScheduledBlock | null;
   onClose: () => void;
-  onApprove: (blockId: string, notes: string) => Promise<void>;
+  onApprove: (
+    blockId: string,
+    notes: string,
+    timingOptions?: {
+      executionTiming: 'SCHEDULED' | 'NOW' | 'CUSTOM';
+      customStartTime?: string;
+      customEndTime?: string;
+    }
+  ) => Promise<void>;
   onReject: (blockId: string, notes: string) => Promise<void>;
 }
 
@@ -54,19 +77,65 @@ export const ExplainModal: React.FC<Props> = ({
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [justApproved, setJustApproved] = useState(false);
+  const [executionTiming, setExecutionTiming] = useState<'SCHEDULED' | 'NOW' | 'CUSTOM'>('SCHEDULED');
+  const [customDate, setCustomDate] = useState<string>('');
+  const [customStartTime, setCustomStartTime] = useState<string>('02:00');
 
   // Reset local state whenever a different block is opened
   useEffect(() => {
     setNotes('');
     setSubmitting(false);
     setJustApproved(false);
+    setExecutionTiming('SCHEDULED');
+
+    if (block?.start_time) {
+      const bDate = block.start_time.split(' ')[0];
+      const today = new Date().toISOString().split('T')[0];
+      setCustomDate(bDate || today);
+      const bTime = block.start_time.split(' ')[1];
+      if (bTime) setCustomStartTime(bTime);
+    }
   }, [block?.block_id]);
 
   if (!block) return null;
 
+  // Live Timing Calculations for "Apply NOW" option
+  const now = new Date();
+  const currentHours = String(now.getHours()).padStart(2, '0');
+  const currentMinutes = String(now.getMinutes()).padStart(2, '0');
+  const nowTimeStr = `${currentHours}:${currentMinutes}`;
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  const durationMin = block.duration_minutes || 120;
+  const nowEnd = new Date(now.getTime() + durationMin * 60000);
+  const nowEndStr = `${String(nowEnd.getHours()).padStart(2, '0')}:${String(nowEnd.getMinutes()).padStart(2, '0')}`;
+
+  const getCustomEndTimeStr = () => {
+    try {
+      const [h, m] = customStartTime.split(':').map(Number);
+      const d = new Date();
+      d.setHours(h, m + durationMin, 0, 0);
+      return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    } catch {
+      return '';
+    }
+  };
+
   const handleApprove = async () => {
     setSubmitting(true);
-    await onApprove(block.block_id, notes);
+    let customStart: string | undefined = undefined;
+    let customEnd: string | undefined = undefined;
+
+    if (executionTiming === 'CUSTOM') {
+      customStart = `${customDate || todayStr} ${customStartTime}`;
+      customEnd = `${customDate || todayStr} ${getCustomEndTimeStr()}`;
+    }
+
+    await onApprove(block.block_id, notes, {
+      executionTiming,
+      customStartTime: customStart,
+      customEndTime: customEnd,
+    });
     setSubmitting(false);
     setJustApproved(true);
   };
@@ -77,7 +146,6 @@ export const ExplainModal: React.FC<Props> = ({
     setSubmitting(false);
   };
 
-  // isApproved: true only if the backend confirmed APPROVED status OR just approved in this session
   const isApproved = block.status === 'APPROVED' || justApproved;
 
   return (
@@ -103,7 +171,7 @@ export const ExplainModal: React.FC<Props> = ({
                 }`}
               >
                 {isApproved ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                {isApproved ? 'Approved' : 'Pending Review'}
+                {isApproved ? 'Approved & Locked' : 'Pending Review'}
               </span>
             </div>
 
@@ -115,14 +183,14 @@ export const ExplainModal: React.FC<Props> = ({
               <span className="text-slate-600">•</span>
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-blue-400" />
-                Window: <strong className="text-slate-200">{block.start_time} — {block.end_time?.includes(' ') ? block.end_time.split(' ')[1] : block.end_time} ({block.duration_minutes}m)</strong>
+                Duration: <strong className="text-slate-200">{block.duration_minutes}m ({Math.floor(block.duration_minutes / 60)}h {block.duration_minutes % 60}m)</strong>
               </span>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -134,10 +202,10 @@ export const ExplainModal: React.FC<Props> = ({
           <div className="bg-slate-950 border border-blue-900/40 rounded-xl p-4 space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider">
               <Lightbulb className="w-4 h-4 text-blue-400" />
-              Why Did the AI Choose This Time Window?
+              Why Did the AI Choose This Slot?
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              This window falls during the low-traffic night period (01:00 - 05:00 AM). Scheduling {block.tasks.length} repairs together in this single slot avoids having to stop train traffic multiple times during peak passenger hours.
+              This window falls during the low-traffic night period (01:00 - 05:00 AM). Scheduling {block.tasks.length} repairs together in this single slot eliminates duplicate line shutdowns and avoids stopping passenger trains during busy daytime hours.
             </p>
           </div>
 
@@ -204,12 +272,138 @@ export const ExplainModal: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Section 2.5: Official Track Possession Notice */}
-          {isApproved ? (
+          {/* Section 3: TIMING PROMINENCE & CHOOSE EXECUTION (NOW vs IN FUTURE) */}
+          {!isApproved ? (
+            <div className="space-y-3.5 bg-slate-950 p-4 rounded-2xl border border-blue-500/30 shadow-lg">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                  <span>Choose When to Apply This Track Block</span>
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                  Select Execution Timing
+                </span>
+              </div>
+
+              {/* Two Prominent Timing Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* OPTION 1: Sanction for Future / Planned Slot */}
+                <div
+                  onClick={() => setExecutionTiming('SCHEDULED')}
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 relative text-left ${
+                    executionTiming === 'SCHEDULED'
+                      ? 'bg-blue-950/50 border-blue-500 shadow-lg ring-2 ring-blue-500/30'
+                      : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Apply in Future (Scheduled Slot)</span>
+                    </span>
+                    <span className="bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[9px] font-bold px-1.5 py-0.5 rounded">
+                      AI Recommended
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80 font-mono text-xs space-y-1">
+                    <div className="text-slate-400 text-[10px]">Planned Possession Time:</div>
+                    <div className="text-emerald-400 font-extrabold text-sm">
+                      {block.start_time} ➔ {block.end_time?.includes(' ') ? block.end_time.split(' ')[1] : block.end_time} IST
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      Duration: <strong>{block.duration_minutes} Minutes</strong> ({Math.floor(block.duration_minutes / 60)}h {block.duration_minutes % 60}m)
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-400 leading-snug">
+                    Executes during the planned low-traffic slot. Express trains operate without interruption.
+                  </p>
+                </div>
+
+                {/* OPTION 2: Apply Block NOW (Immediate Possession) */}
+                <div
+                  onClick={() => setExecutionTiming('NOW')}
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 relative text-left ${
+                    executionTiming === 'NOW'
+                      ? 'bg-red-950/50 border-red-500 shadow-lg ring-2 ring-red-500/40'
+                      : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                      <span>Apply Block NOW (Immediate)</span>
+                    </span>
+                    <span className="bg-red-500/20 text-red-300 border border-red-500/40 text-[9px] font-bold px-1.5 py-0.5 rounded animate-pulse">
+                      Immediate Shutdown
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80 font-mono text-xs space-y-1">
+                    <div className="text-slate-400 text-[10px]">Immediate Execution:</div>
+                    <div className="text-red-400 font-extrabold text-sm">
+                      NOW ({nowTimeStr} IST) ➔ {nowEndStr} IST
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      Starts immediately for <strong>{block.duration_minutes} Minutes</strong>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-400 leading-snug">
+                    Halt line traffic immediately for urgent work. Active trains will be piloted under Caution Orders.
+                  </p>
+                </div>
+              </div>
+
+              {/* Optional Custom Timing Picker */}
+              <div className="pt-1 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onClick={() => setExecutionTiming(executionTiming === 'CUSTOM' ? 'SCHEDULED' : 'CUSTOM')}
+                  className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <CalendarPlus className="w-3.5 h-3.5" />
+                  <span>{executionTiming === 'CUSTOM' ? 'Cancel Custom Timing' : 'Or Pick a Specific Custom Date & Time...'}</span>
+                </button>
+
+                {executionTiming === 'CUSTOM' && (
+                  <div className="mt-2.5 p-3 bg-slate-900/90 rounded-xl border border-blue-500/40 space-y-2 animate-in fade-in">
+                    <div className="text-xs font-bold text-slate-200">Custom Future Possession Schedule:</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                      <div>
+                        <label className="block text-[10px] text-slate-400 mb-1">Execution Date:</label>
+                        <input
+                          type="date"
+                          value={customDate}
+                          min={todayStr}
+                          onChange={(e) => setCustomDate(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-slate-400 mb-1">Start Time (IST):</label>
+                        <input
+                          type="time"
+                          value={customStartTime}
+                          onChange={(e) => setCustomStartTime(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 text-xs focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="text-[11px] font-mono text-emerald-400">
+                      Scheduled Window: <strong>{customDate || todayStr} {customStartTime} ➔ {getCustomEndTimeStr()} IST ({block.duration_minutes} mins)</strong>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Post-Approval Confirmed Possession Box */
             <div className="p-4 bg-emerald-950/60 border border-emerald-500/60 rounded-xl space-y-2.5 shadow-lg shadow-emerald-950/40 animate-in fade-in">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
                   Track Possession Sanctioned & Confirmed
                 </span>
                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
@@ -241,16 +435,9 @@ export const ExplainModal: React.FC<Props> = ({
                 ✓ Caution Order (30 km/h) generated • Section Station Masters and Traction Power Controller (TPC) notified • Single-Line Working (TSLW) active during possession.
               </div>
             </div>
-          ) : (
-            <div className="p-3 bg-amber-950/30 border border-amber-500/30 rounded-xl text-xs text-amber-200 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>
-                Proposed Window: <strong>{block.start_time} — {block.end_time?.includes(' ') ? block.end_time.split(' ')[1] : block.end_time} ({block.duration_minutes}m)</strong>. Click "Approve Block Permit" below to sanction this track possession.
-              </span>
-            </div>
           )}
 
-          {/* Section 3: Controller Remarks & History */}
+          {/* Section 4: Controller Remarks & History */}
           <div className="space-y-2">
             <label className="block text-xs font-semibold text-slate-300">
               Section Controller Remarks / Instructions:
@@ -296,15 +483,21 @@ export const ExplainModal: React.FC<Props> = ({
               className={`px-5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer disabled:opacity-60 ${
                 isApproved
                   ? 'bg-emerald-700 text-emerald-100'
-                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                  : executionTiming === 'NOW'
+                  ? 'bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/30'
+                  : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
               {submitting
-                ? 'Approving...'
+                ? 'Applying Sanction...'
                 : isApproved
-                ? '✓ Permit Already Sanctioned'
-                : 'Approve Block Permit'}
+                ? '✓ Permit Sanctioned'
+                : executionTiming === 'NOW'
+                ? '🚨 Sanction & Apply Block NOW'
+                : executionTiming === 'CUSTOM'
+                ? '📅 Sanction for Custom Slot'
+                : '✓ Sanction for Scheduled Slot'}
             </button>
           </div>
         </div>
