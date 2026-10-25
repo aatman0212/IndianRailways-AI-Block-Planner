@@ -184,6 +184,12 @@ def run_planning_cycle() -> Dict[str, Any]:
 
     # 5. Merge committed approved blocks with newly optimized routine blocks
     merged_blocks = committed_blocks + new_blocks
+    merged_blocks.sort(
+        key=lambda b: (
+            0 if any(t.severity == Severity.EMERGENCY for t in b.tasks) else 1,
+            b.start_time,
+        )
+    )
 
     # 6. Recompute comprehensive analytics across the unified plan
     full_analytics = optimizer._calculate_analytics(merged_blocks, ranked_tasks)

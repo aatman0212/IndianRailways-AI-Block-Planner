@@ -658,7 +658,8 @@ class DelayPropagationModel:
         bundled_blocks = [b for b in scheduled_blocks if b.is_bundled]
         total_block_minutes = sum(b.duration_minutes for b in scheduled_blocks)
 
-        extra_separate_blocks = max(0, len(all_tasks) - len(scheduled_blocks))
+        # Each bundled block with K tasks eliminates (K - 1) separate track closures:
+        extra_separate_blocks = sum(max(0, len(b.task_ids) - 1) for b in scheduled_blocks)
         saved_shutdown_minutes = extra_separate_blocks * 95
 
         passenger_savings_min = int(saved_shutdown_minutes * 1.8)

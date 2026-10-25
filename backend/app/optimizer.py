@@ -205,7 +205,7 @@ class BlockPlanningOptimizer:
                             else f"AI Optimized Block with {len(assigned_tasks)} tasks across {len(assigned_depts)} department(s)."
                         )
                         block = ScheduledBlock(
-                            block_id=f"BLK_{win.section_id}_{win.window_id.split('_')[-2]}_{win.window_id.split('_')[-1]}",
+                            block_id=f"BLK_{win.window_id.replace('WIN_', '')}",
                             section_id=win.section_id,
                             window_id=win.window_id,
                             start_time=win.start_time,
