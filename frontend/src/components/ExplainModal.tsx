@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScheduledBlock, Department } from '../types';
 import { X, CheckCircle2, XCircle, Layers, ShieldAlert, Zap, Radio, Info, Clock, MapPin, Lightbulb } from 'lucide-react';
 
@@ -55,6 +55,13 @@ export const ExplainModal: React.FC<Props> = ({
   const [submitting, setSubmitting] = useState(false);
   const [justApproved, setJustApproved] = useState(false);
 
+  // Reset local state whenever a different block is opened
+  useEffect(() => {
+    setNotes('');
+    setSubmitting(false);
+    setJustApproved(false);
+  }, [block?.block_id]);
+
   if (!block) return null;
 
   const handleApprove = async () => {
@@ -70,6 +77,7 @@ export const ExplainModal: React.FC<Props> = ({
     setSubmitting(false);
   };
 
+  // isApproved: true only if the backend confirmed APPROVED status OR just approved in this session
   const isApproved = block.status === 'APPROVED' || justApproved;
 
   return (
@@ -269,23 +277,34 @@ export const ExplainModal: React.FC<Props> = ({
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
           >
-            Cancel
+            {isApproved ? 'Close' : 'Cancel'}
           </button>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleReject}
-              disabled={submitting}
-              className="px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
-            >
-              <XCircle className="w-4 h-4" /> Reject Block
-            </button>
+            {!isApproved && (
+              <button
+                onClick={handleReject}
+                disabled={submitting}
+                className="px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <XCircle className="w-4 h-4" /> Reject Block
+              </button>
+            )}
             <button
               onClick={handleApprove}
               disabled={submitting || isApproved}
-              className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+              className={`px-5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer disabled:opacity-60 ${
+                isApproved
+                  ? 'bg-emerald-700 text-emerald-100'
+                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+              }`}
             >
-              <CheckCircle2 className="w-4 h-4" /> {isApproved ? 'Already Approved' : 'Approve Block Permit'}
+              <CheckCircle2 className="w-4 h-4" />
+              {submitting
+                ? 'Approving...'
+                : isApproved
+                ? '✓ Permit Already Sanctioned'
+                : 'Approve Block Permit'}
             </button>
           </div>
         </div>

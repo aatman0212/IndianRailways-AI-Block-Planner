@@ -54,10 +54,33 @@ STATE: Dict[str, Any] = {
 
 
 def load_initial_data():
-    """Loads default synthetic dataset into memory and mirrors UP/DOWN infrastructure."""
+    """Loads default synthetic dataset into memory and mirrors UP/DOWN infrastructure.
+    Auto-regenerates dataset if it is stale (windows dated before today).
+    """
+    from backend.app.synthetic_data import seed_synthetic_dataset
+
+    today_str = datetime.now().strftime("%Y-%m-%d")
+
+    def _is_stale(data: dict) -> bool:
+        """Return True if stored windows are all in the past (stale dataset)."""
+        windows = data.get("windows", [])
+        if not windows:
+            return True
+        # Check if ALL non-advance windows are in the past
+        regular_windows = [w for w in windows if "ADVANCE" not in w.get("window_id", "")]
+        if not regular_windows:
+            return False
+        future_windows = [w for w in regular_windows if w.get("start_time", "") >= today_str]
+        return len(future_windows) == 0  # stale if no windows are today or future
+
     if not DATA_PATH.exists():
-        from backend.app.synthetic_data import seed_synthetic_dataset
         seed_synthetic_dataset(str(DATA_PATH))
+    else:
+        with open(DATA_PATH, "r", encoding="utf-8") as f:
+            check_data = json.load(f)
+        if _is_stale(check_data):
+            print(f"[INFO] Synthetic data is stale (no windows >= {today_str}). Regenerating fresh dataset...")
+            seed_synthetic_dataset(str(DATA_PATH))
 
     with open(DATA_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -184,6 +207,23 @@ load_initial_data()
 # -------------------------------------------------------------
 # REST API ENDPOINTS
 # -------------------------------------------------------------
+
+@app.post("/api/plan/reset")
+def reset_plan():
+    """Resets all blocks and state back to a completely clean slate with 0 approved blocks."""
+    from backend.app.synthetic_data import seed_synthetic_dataset
+    if DATA_PATH.exists():
+        DATA_PATH.unlink()
+    seed_synthetic_dataset(str(DATA_PATH))
+    STATE["current_plan"] = []
+    load_initial_data()
+    return {
+        "status": "success",
+        "message": "Corridor plan successfully reset to clean slate.",
+        "blocks": STATE["current_plan"],
+        "analytics": STATE["analytics"],
+    }
+
 
 @app.get("/api/health")
 def health_check():
