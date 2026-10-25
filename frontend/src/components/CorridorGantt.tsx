@@ -241,8 +241,10 @@ export const CorridorGantt: React.FC<Props> = ({
               </span>
             )}
 
-            <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
-              Priority: {b.total_priority_value} pts
+            <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+              {b.tasks.length > 1
+                ? `Combined Yield: ${b.total_priority_value} pts (${b.tasks.length} tasks)`
+                : `Priority: ${b.total_priority_value}/100`}
             </span>
 
             {b.block_id.includes('MEGA_BLOCK') && (
