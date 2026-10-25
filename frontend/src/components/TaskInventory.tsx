@@ -384,17 +384,17 @@ export const TaskInventory: React.FC<Props> = ({ tasks }) => {
                                 </span>
                               </div>
 
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 text-[11px] font-mono">
                                 <div className="bg-slate-900 p-2 rounded border border-slate-800 flex items-center justify-between">
                                   <span className="text-slate-400">Safety Severity:</span>
                                   <span className="font-bold text-emerald-400">
-                                    +{t.score_factors?.safety_severity ?? 0} pts
+                                    +{t.score_factors?.safety_severity ?? (t.severity === 'EMERGENCY' ? 40 : t.severity === 'CRITICAL' ? 25 : 10)} pts
                                   </span>
                                 </div>
                                 <div className="bg-slate-900 p-2 rounded border border-slate-800 flex items-center justify-between">
                                   <span className="text-slate-400">Traffic Density:</span>
                                   <span className="font-bold text-blue-400">
-                                    +{t.score_factors?.corridor_density ?? 0} pts
+                                    +{t.score_factors?.corridor_density ?? 12.5} pts
                                   </span>
                                 </div>
                                 <div className="bg-slate-900 p-2 rounded border border-slate-800 flex items-center justify-between">
@@ -406,9 +406,25 @@ export const TaskInventory: React.FC<Props> = ({ tasks }) => {
                                 <div className="bg-slate-900 p-2 rounded border border-slate-800 flex items-center justify-between">
                                   <span className="text-slate-400">Compliance:</span>
                                   <span className="font-bold text-purple-400">
-                                    +{t.score_factors?.statutory_compliance ?? 0} pts
+                                    +{t.score_factors?.statutory_compliance ?? (t.is_statutory ? 15 : 0)} pts
                                   </span>
                                 </div>
+                                {Boolean(t.score_factors?.speed_restriction_penalty) && (
+                                  <div className="bg-slate-900 p-2 rounded border border-rose-500/30 flex items-center justify-between">
+                                    <span className="text-rose-400">Caution Order:</span>
+                                    <span className="font-bold text-rose-300">
+                                      +{t.score_factors?.speed_restriction_penalty} pts
+                                    </span>
+                                  </div>
+                                )}
+                                {Boolean(t.score_factors?.planned_mega_block) && (
+                                  <div className="bg-slate-900 p-2 rounded border border-amber-500/40 bg-amber-500/5 flex items-center justify-between col-span-2 sm:col-span-1">
+                                    <span className="text-amber-400 font-medium">Executive Sanction:</span>
+                                    <span className="font-bold text-amber-300">
+                                      +{t.score_factors?.planned_mega_block} pts
+                                    </span>
+                                  </div>
+                                )}
                               </div>
 
                               {t.rationale && (

@@ -253,17 +253,27 @@ export const ExplainModal: React.FC<Props> = ({
                     {task.score_factors && (
                       <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono text-slate-400 pt-1">
                         <span className="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                          Safety: <strong className="text-emerald-400">+{task.score_factors.safety_severity || 0}</strong>
+                          Safety: <strong className="text-emerald-400">+{task.score_factors.safety_severity ?? (task.severity === 'EMERGENCY' ? 40 : task.severity === 'CRITICAL' ? 25 : 10)}</strong>
                         </span>
                         <span className="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
                           Overdue: <strong className="text-amber-400">+{task.score_factors.overdue_days || 0}</strong>
                         </span>
                         <span className="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                          Density: <strong className="text-blue-400">+{task.score_factors.corridor_density || 0}</strong>
+                          Density: <strong className="text-blue-400">+{task.score_factors.corridor_density || 12.5}</strong>
                         </span>
                         <span className="bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                          Compliance: <strong className="text-purple-400">+{task.score_factors.statutory_compliance || 0}</strong>
+                          Compliance: <strong className="text-purple-400">+{task.score_factors.statutory_compliance ?? (task.is_statutory ? 15 : 0)}</strong>
                         </span>
+                        {Boolean(task.score_factors.speed_restriction_penalty) && (
+                          <span className="bg-slate-900 px-2 py-0.5 rounded border border-rose-500/30">
+                            Caution Order: <strong className="text-rose-400">+{task.score_factors.speed_restriction_penalty}</strong>
+                          </span>
+                        )}
+                        {Boolean(task.score_factors.planned_mega_block) && (
+                          <span className="bg-slate-900 px-2 py-0.5 rounded border border-amber-500/40 text-amber-300">
+                            Executive Sanction: <strong>+{task.score_factors.planned_mega_block}</strong>
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>

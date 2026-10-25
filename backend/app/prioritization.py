@@ -61,6 +61,13 @@ class TaskPrioritizer:
         speed_penalty_score = self.SPEED_RESTRICTION_POINTS if task.speed_restriction else 0.0
         factors["speed_restriction_penalty"] = speed_penalty_score
 
+        # 6. Sanctioned Mega Block / Advance Policy Directive Score
+        if task.score_factors and "planned_mega_block" in task.score_factors:
+            factors["planned_mega_block"] = task.score_factors["planned_mega_block"]
+        elif "MEGA_BLOCK" in task.task_id or "SHADOW_BLOCK" in task.task_id:
+            subtotal = sum(factors.values())
+            factors["planned_mega_block"] = max(10.0, round(85.0 - subtotal, 1))
+
         # Total Raw Score
         raw_score = sum(factors.values())
         final_score = min(100.0, max(0.0, round(raw_score, 1)))
@@ -91,6 +98,9 @@ class TaskPrioritizer:
 
         sec_name = self.sections[task.section_id].name if task.section_id in self.sections else task.section_id
         reasons.append(f"located on high-density line ({sec_name})")
+
+        if "planned_mega_block" in factors:
+            reasons.append("sanctioned advance corridor renewal under Railway Board Mega Block directive")
 
         return f"Priority {final_score}/100: Driven by {', '.join(reasons)}."
 

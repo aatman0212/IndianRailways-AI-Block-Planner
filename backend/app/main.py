@@ -488,6 +488,7 @@ def schedule_future_block(payload: FutureBlockRequest):
     # If no existing tasks in backlog, generate an official planned mega block job
     if not assigned_tasks:
         primary_dept = payload.departments[0] if payload.departments else Department.ENGINEERING
+        prioritizer = TaskPrioritizer(STATE["sections"])
         rep_task = UnifiedMaintenanceTask(
             task_id=f"TASK_{payload.block_type}_{now_str[-4:]}",
             department=primary_dept,
@@ -504,10 +505,11 @@ def schedule_future_block(payload: FutureBlockRequest):
             is_statutory=True,
             requires_power_block=Department.TRD in payload.departments,
             requires_traffic_block=True,
-            priority_score=85.0,
-            score_factors={"planned_mega_block": 85.0},
-            rationale=f"Advance Mega Block scheduled and approved by {payload.approved_by}.",
+            priority_score=0.0,
+            score_factors={},
+            rationale="",
         )
+        rep_task = prioritizer.score_task(rep_task)
         STATE["tasks"][rep_task.task_id] = rep_task
         assigned_tasks.append(rep_task)
         task_ids.append(rep_task.task_id)
