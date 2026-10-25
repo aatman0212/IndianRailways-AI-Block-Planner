@@ -259,20 +259,11 @@ export const TrackSchematic: React.FC<Props> = ({ sections, blocks, onSelectBloc
         <div className="min-w-[1080px] py-2 space-y-7">
           {/* Station Ruler: Shows all 9 Stations correctly placed! */}
           <div className="grid grid-cols-9 relative text-center">
-            {STATIONS.map((station, idx) => {
-              const isSelectedStation =
-                idx === selectedSectionIdx || idx === selectedSectionIdx + 1;
-
+            {STATIONS.map((station) => {
               return (
                 <div key={station.code} className="flex flex-col items-center relative">
                   {/* Station Icon & Signal */}
-                  <div
-                    className={`w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all ${
-                      isSelectedStation
-                        ? 'bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-500/20 scale-105'
-                        : 'bg-slate-900 border-slate-700 text-blue-400'
-                    }`}
-                  >
+                  <div className="w-9 h-9 rounded-xl border-2 border-slate-700 bg-slate-900 text-blue-400 flex items-center justify-center transition-all shadow-sm">
                     <Building2 className="w-4 h-4" />
                   </div>
 
