@@ -95,6 +95,7 @@ export const CorridorGantt: React.FC<Props> = ({
   const [viewMode, setViewMode] = useState<'CARDS' | 'TIMELINE'>('CARDS');
   const [sortBy, setSortBy] = useState<'PRIORITY' | 'TIME'>('PRIORITY');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'APPROVED' | 'PENDING'>(initialStatusFilter);
+  const [lineFilter, setLineFilter] = useState<'ALL' | 'UP' | 'DOWN'>('ALL');
 
   // Synchronize when initialStatusFilter changes from parent (e.g. clicking top navigation tab)
   useEffect(() => {
@@ -104,7 +105,16 @@ export const CorridorGantt: React.FC<Props> = ({
   }, [initialStatusFilter]);
 
   const allBlocksSorted = useMemo(() => {
-    let list = filterBundledOnly ? blocks.filter((b) => b.is_bundled) : [...blocks];
+    let list = [...blocks];
+    if (filterBundledOnly) {
+      list = list.filter((b) => b.is_bundled);
+    }
+    if (lineFilter === 'UP') {
+      list = list.filter((b) => b.section_id.endsWith('_UP') || !b.section_id.endsWith('_DN'));
+    } else if (lineFilter === 'DOWN') {
+      list = list.filter((b) => b.section_id.endsWith('_DN'));
+    }
+
     if (sortBy === 'PRIORITY') {
       list.sort((a, b) => {
         const aEmerg = a.tasks.some((t) => t.severity === 'EMERGENCY') ? 1 : 0;
@@ -116,7 +126,7 @@ export const CorridorGantt: React.FC<Props> = ({
       list.sort((a, b) => a.start_time.localeCompare(b.start_time));
     }
     return list;
-  }, [blocks, filterBundledOnly, sortBy]);
+  }, [blocks, filterBundledOnly, lineFilter, sortBy]);
 
   const approvedBlocks = useMemo(
     () => allBlocksSorted.filter((b) => b.status === 'APPROVED'),
@@ -141,6 +151,16 @@ export const CorridorGantt: React.FC<Props> = ({
     if (statusFilter === 'PENDING') return pendingBlocks;
     return allBlocksSorted;
   }, [statusFilter, approvedBlocks, pendingBlocks, allBlocksSorted]);
+
+  const filteredSections = useMemo(() => {
+    if (lineFilter === 'UP') {
+      return sections.filter((s) => s.line_type === 'UP_MAIN' || s.section_id.endsWith('_UP'));
+    }
+    if (lineFilter === 'DOWN') {
+      return sections.filter((s) => s.line_type === 'DN_MAIN' || s.section_id.endsWith('_DN'));
+    }
+    return sections;
+  }, [sections, lineFilter]);
 
   const sectionMap = useMemo(() => {
     const map: Record<string, Section> = {};
@@ -413,7 +433,7 @@ export const CorridorGantt: React.FC<Props> = ({
             >
               <span>All Blocks</span>
               <span className="font-mono text-[10px] bg-slate-800 px-1.5 py-0.2 rounded-full">
-                {blocks.length}
+                {allBlocksSorted.length}
               </span>
             </button>
 
@@ -455,6 +475,42 @@ export const CorridorGantt: React.FC<Props> = ({
               <span className="font-mono text-[10px] bg-slate-800 px-1.5 py-0.2 rounded-full">
                 {totalPendingCount}
               </span>
+            </button>
+          </div>
+
+          {/* Line Filter (ALL / UP MAIN / DOWN MAIN) */}
+          <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setLineFilter('ALL')}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                lineFilter === 'ALL'
+                  ? 'bg-slate-700 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Both Lines
+            </button>
+            <button
+              onClick={() => setLineFilter('UP')}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                lineFilter === 'UP'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-blue-400/80 hover:text-blue-300'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+              UP Line
+            </button>
+            <button
+              onClick={() => setLineFilter('DOWN')}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                lineFilter === 'DOWN'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-indigo-400/80 hover:text-indigo-300'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+              DOWN Line
             </button>
           </div>
 
@@ -668,8 +724,9 @@ export const CorridorGantt: React.FC<Props> = ({
 
             {/* Section Rows */}
             <div className="divide-y divide-slate-800/60 pt-2">
-              {sections.map((section) => {
+              {filteredSections.map((section) => {
                 const secBlocks = blocksBySection[section.section_id] || [];
+                const isDownLine = section.line_type === 'DN_MAIN' || section.section_id.endsWith('_DN');
 
                 return (
                   <div
@@ -678,8 +735,17 @@ export const CorridorGantt: React.FC<Props> = ({
                   >
                     {/* Section Label */}
                     <div className="w-64 shrink-0 pr-4">
-                      <div className="text-xs font-bold text-slate-200 truncate">
-                        {section.name}
+                      <div className="text-xs font-bold text-slate-200 truncate flex items-center gap-1.5">
+                        <span className="truncate">{section.name}</span>
+                        <span
+                          className={`text-[9px] font-mono px-1.5 py-0.2 rounded border shrink-0 ${
+                            isDownLine
+                              ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                              : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                          }`}
+                        >
+                          {isDownLine ? 'DOWN' : 'UP'}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400 mt-0.5">
                         <span>Km {section.start_km} – {section.end_km}</span>

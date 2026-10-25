@@ -19,7 +19,7 @@ from backend.app.models import (
 
 
 def get_default_sections() -> List[Section]:
-    return [
+    up_sections = [
         Section(
             section_id="SEC_PRG_SFG_UP",
             division="Prayagraj (NCR)",
@@ -102,6 +102,22 @@ def get_default_sections() -> List[Section]:
         ),
     ]
 
+    dn_sections = [
+        Section(
+            section_id=s.section_id.replace("_UP", "_DN"),
+            division=s.division,
+            name=s.name.replace("(UP)", "(DOWN)").replace("UP", "DOWN"),
+            line_type="DN_MAIN",
+            start_km=s.start_km,
+            end_km=s.end_km,
+            traffic_density_gmt=s.traffic_density_gmt,
+            max_permissible_speed=s.max_permissible_speed,
+        )
+        for s in up_sections
+    ]
+
+    return up_sections + dn_sections
+
 
 def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
     d = base_date
@@ -111,10 +127,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="ENG_001",
             department=Department.ENGINEERING,
             source_system="TMS",
-            section_id="SEC_SFG_MRE_UP",
+            section_id="SEC_SFG_MRE_UP",  # UP MAIN
             asset_id="RAIL_KM_838_WELD",
             title="Thermite Weld Fracture Repair",
-            description="USFD flaw detector detected severe weld defect at Km 838/12. Imposed temporary 30 km/h caution order.",
+            description="USFD flaw detector detected severe weld defect at Km 838/12 on UP line. Imposed temporary 30 km/h caution order.",
             severity=Severity.EMERGENCY,
             min_duration_minutes=120,
             reported_date=(d - timedelta(days=2)).strftime("%Y-%m-%d"),
@@ -129,10 +145,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="ENG_002",
             department=Department.ENGINEERING,
             source_system="TMS",
-            section_id="SEC_MRE_BRE_UP",
+            section_id="SEC_MRE_BRE_UP",  # UP MAIN
             asset_id="TRACK_KM_852_TAMP",
             title="CSM Machine Track Tamping",
-            description="High unevenness standard deviation recorded by OMS car. Tamping required to restore 130 km/h runnability.",
+            description="High unevenness standard deviation recorded by OMS car on UP Main. Tamping required to restore 130 km/h runnability.",
             severity=Severity.CRITICAL,
             min_duration_minutes=150,
             reported_date=(d - timedelta(days=5)).strftime("%Y-%m-%d"),
@@ -146,10 +162,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="ENG_003",
             department=Department.ENGINEERING,
             source_system="TMS",
-            section_id="SEC_SRO_KGA_UP",
+            section_id="SEC_SRO_KGA_DN",  # DOWN MAIN
             asset_id="SWITCH_KM_902_SEJ",
             title="Switch Expansion Joint (SEJ) Replacement",
-            description="Tongue rail gap exceeded tolerance limits at Km 902/4. Potential wheel climbing hazard.",
+            description="Tongue rail gap exceeded tolerance limits at Km 902/4 on DOWN Main. Potential wheel climbing hazard.",
             severity=Severity.CRITICAL,
             min_duration_minutes=120,
             reported_date=(d - timedelta(days=4)).strftime("%Y-%m-%d"),
@@ -164,10 +180,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="ENG_004",
             department=Department.ENGINEERING,
             source_system="TMS",
-            section_id="SEC_FTP_BKO_UP",
+            section_id="SEC_FTP_BKO_UP",  # UP MAIN
             asset_id="SLEEPER_KM_960",
             title="Casual Sleeper Renewal & Fastening",
-            description="Cracked PSC sleepers requiring replacement and ERC clip tensioning.",
+            description="Cracked PSC sleepers requiring replacement and ERC clip tensioning on UP line.",
             severity=Severity.ROUTINE,
             min_duration_minutes=90,
             reported_date=(d - timedelta(days=8)).strftime("%Y-%m-%d"),
@@ -181,10 +197,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="ENG_005",
             department=Department.ENGINEERING,
             source_system="TMS",
-            section_id="SEC_BKO_CNB_UP",
+            section_id="SEC_BKO_CNB_DN",  # DOWN MAIN
             asset_id="DEEP_SCREEN_KM_995",
             title="BCM Ballast Deep Screening",
-            description="Caked ballast causing poor track drainage and pumping joints.",
+            description="Caked ballast causing poor track drainage and pumping joints on DOWN Main.",
             severity=Severity.ROUTINE,
             min_duration_minutes=180,
             reported_date=(d - timedelta(days=14)).strftime("%Y-%m-%d"),
@@ -200,10 +216,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="TRD_001",
             department=Department.TRD,
             source_system="TDMS",
-            section_id="SEC_SFG_MRE_UP",
+            section_id="SEC_SFG_MRE_UP",  # UP MAIN
             asset_id="OHE_MAST_839_CANTILEVER",
             title="OHE Cantilever Adjustment & Stagger Check",
-            description="Contact wire stagger deviation detected at Mast 839/14. Risk of pantograph entanglement on high-speed Rajdhani rakes.",
+            description="Contact wire stagger deviation detected at Mast 839/14 on UP line. Risk of pantograph entanglement on high-speed Rajdhani rakes.",
             severity=Severity.CRITICAL,
             min_duration_minutes=90,
             reported_date=(d - timedelta(days=3)).strftime("%Y-%m-%d"),
@@ -217,10 +233,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="TRD_002",
             department=Department.TRD,
             source_system="TDMS",
-            section_id="SEC_MRE_BRE_UP",
+            section_id="SEC_MRE_BRE_UP",  # UP MAIN
             asset_id="OHE_INSULATOR_KM_854",
             title="High-Voltage Insulator Washing & Thermal Scan",
-            description="Severe dust/fog pollution deposit on 25kV bracket insulators. Thermo-vision scan showed hotspot.",
+            description="Severe dust/fog pollution deposit on 25kV bracket insulators on UP Main. Thermo-vision scan showed hotspot.",
             severity=Severity.CRITICAL,
             min_duration_minutes=100,
             reported_date=(d - timedelta(days=4)).strftime("%Y-%m-%d"),
@@ -234,10 +250,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="TRD_003",
             department=Department.TRD,
             source_system="TDMS",
-            section_id="SEC_SRO_KGA_UP",
+            section_id="SEC_SRO_KGA_DN",  # DOWN MAIN
             asset_id="OHE_NEUTRAL_SEC_905",
             title="PTFE Neutral Section Overhaul",
-            description="Arcing horn wear at neutral section assembly Km 905. Tower wagon needed.",
+            description="Arcing horn wear at neutral section assembly Km 905 on DOWN Main. Tower wagon needed.",
             severity=Severity.EMERGENCY,
             min_duration_minutes=110,
             reported_date=(d - timedelta(days=1)).strftime("%Y-%m-%d"),
@@ -251,10 +267,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="TRD_004",
             department=Department.TRD,
             source_system="TDMS",
-            section_id="SEC_KGA_FTP_UP",
+            section_id="SEC_KGA_FTP_UP",  # UP MAIN
             asset_id="OHE_DROPPER_KM_930",
             title="Current Carrying Dropper Replacement",
-            description="Multiple loose droppers causing sag in contact wire profile.",
+            description="Multiple loose droppers causing sag in contact wire profile on UP line.",
             severity=Severity.ROUTINE,
             min_duration_minutes=80,
             reported_date=(d - timedelta(days=10)).strftime("%Y-%m-%d"),
@@ -270,10 +286,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="SNT_001",
             department=Department.ST,
             source_system="SMMS",
-            section_id="SEC_SFG_MRE_UP",
+            section_id="SEC_SFG_MRE_UP",  # UP MAIN
             asset_id="POINT_MRE_102B",
             title="Point Machine Overhaul & Detection Contact Setting",
-            description="Point Machine 102B showing intermittent out-of-correspondence alarms during route setting.",
+            description="Point Machine 102B showing intermittent out-of-correspondence alarms during route setting on UP Main.",
             severity=Severity.CRITICAL,
             min_duration_minutes=80,
             reported_date=(d - timedelta(days=2)).strftime("%Y-%m-%d"),
@@ -287,10 +303,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="SNT_002",
             department=Department.ST,
             source_system="SMMS",
-            section_id="SEC_MRE_BRE_UP",
+            section_id="SEC_MRE_BRE_UP",  # UP MAIN
             asset_id="AXLE_COUNTER_BRE_UP",
             title="Digital Axle Counter (DAC) Sensor Recalibration",
-            description="Wheel detector sensor amplitude variation flagged by diagnostic data logger.",
+            description="Wheel detector sensor amplitude variation flagged by diagnostic data logger on UP line.",
             severity=Severity.ROUTINE,
             min_duration_minutes=60,
             reported_date=(d - timedelta(days=6)).strftime("%Y-%m-%d"),
@@ -304,10 +320,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="SNT_003",
             department=Department.ST,
             source_system="SMMS",
-            section_id="SEC_SRO_KGA_UP",
+            section_id="SEC_SRO_KGA_DN",  # DOWN MAIN
             asset_id="TRACK_CIRCUIT_SRO_2T",
             title="DC Track Circuit Boot-leg & Choke Replacement",
-            description="Drop in ballast resistance during dew hours causing track circuit bobbing.",
+            description="Drop in ballast resistance during dew hours causing track circuit bobbing on DOWN line.",
             severity=Severity.CRITICAL,
             min_duration_minutes=75,
             reported_date=(d - timedelta(days=3)).strftime("%Y-%m-%d"),
@@ -321,10 +337,10 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
             task_id="SNT_004",
             department=Department.ST,
             source_system="SMMS",
-            section_id="SEC_BKO_CNB_UP",
-            asset_id="SIGNAL_CNB_HOME_UP",
+            section_id="SEC_BKO_CNB_DN",  # DOWN MAIN
+            asset_id="SIGNAL_CNB_HOME_DN",
             title="LED Signal Aspect Replacement & Cable Meggering",
-            description="Red aspect current leakage in electronic interlocking panel.",
+            description="Red aspect current leakage in electronic interlocking panel on DOWN Home Signal.",
             severity=Severity.EMERGENCY,
             min_duration_minutes=60,
             reported_date=(d - timedelta(days=1)).strftime("%Y-%m-%d"),
@@ -339,11 +355,12 @@ def get_default_tasks(base_date: datetime) -> List[UnifiedMaintenanceTask]:
 
 def get_default_windows(base_date: datetime) -> List[CorridorBlockWindow]:
     """
-    Feasible traffic gap windows across the 8 sections over 3 days (tactical horizon).
-    Derived from Control Office Application (COA) train timetables.
+    Feasible traffic gap windows across all 16 sections (both UP and DOWN main tracks)
+    over 3 days (tactical horizon). Derived from Control Office Application (COA) timetables.
     """
     windows = []
     sections = [
+        # UP MAIN SECTIONS (Westbound)
         "SEC_PRG_SFG_UP",
         "SEC_SFG_MRE_UP",
         "SEC_MRE_BRE_UP",
@@ -352,6 +369,15 @@ def get_default_windows(base_date: datetime) -> List[CorridorBlockWindow]:
         "SEC_KGA_FTP_UP",
         "SEC_FTP_BKO_UP",
         "SEC_BKO_CNB_UP",
+        # DOWN MAIN SECTIONS (Eastbound)
+        "SEC_PRG_SFG_DN",
+        "SEC_SFG_MRE_DN",
+        "SEC_MRE_BRE_DN",
+        "SEC_BRE_SRO_DN",
+        "SEC_SRO_KGA_DN",
+        "SEC_KGA_FTP_DN",
+        "SEC_FTP_BKO_DN",
+        "SEC_BKO_CNB_DN",
     ]
 
     # Slot definitions per day:
