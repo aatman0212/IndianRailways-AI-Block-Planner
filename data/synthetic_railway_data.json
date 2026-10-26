@@ -2,10 +2,10 @@
   "metadata": {
     "division": "Prayagraj (NCR)",
     "route": "Prayagraj Jn (PRYJ) - Kanpur Central (CNB) High-Density Up Main",
-    "generated_at": "2026-10-20T15:10:01.142698",
-    "sections_count": 8,
+    "generated_at": "2026-10-25T23:17:07.700714",
+    "sections_count": 16,
     "tasks_count": 13,
-    "windows_count": 72
+    "windows_count": 144
   },
   "sections": [
     {
@@ -87,6 +87,86 @@
       "end_km": 1018.0,
       "traffic_density_gmt": 140.0,
       "max_permissible_speed": 130
+    },
+    {
+      "section_id": "SEC_PRG_SFG_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Prayagraj Jn - Subedarganj (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 827.0,
+      "end_km": 831.5,
+      "traffic_density_gmt": 115.0,
+      "max_permissible_speed": 110
+    },
+    {
+      "section_id": "SEC_SFG_MRE_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Subedarganj - Manauri (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 831.5,
+      "end_km": 845.2,
+      "traffic_density_gmt": 125.0,
+      "max_permissible_speed": 130
+    },
+    {
+      "section_id": "SEC_MRE_BRE_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Manauri - Bharwari (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 845.2,
+      "end_km": 865.8,
+      "traffic_density_gmt": 130.0,
+      "max_permissible_speed": 130
+    },
+    {
+      "section_id": "SEC_BRE_SRO_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Bharwari - Sirathu (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 865.8,
+      "end_km": 888.4,
+      "traffic_density_gmt": 128.0,
+      "max_permissible_speed": 130
+    },
+    {
+      "section_id": "SEC_SRO_KGA_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Sirathu - Khaga (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 888.4,
+      "end_km": 914.6,
+      "traffic_density_gmt": 120.0,
+      "max_permissible_speed": 130
+    },
+    {
+      "section_id": "SEC_KGA_FTP_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Khaga - Fatehpur (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 914.6,
+      "end_km": 945.0,
+      "traffic_density_gmt": 135.0,
+      "max_permissible_speed": 130
+    },
+    {
+      "section_id": "SEC_FTP_BKO_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Fatehpur - Bindki Road (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 945.0,
+      "end_km": 977.3,
+      "traffic_density_gmt": 132.0,
+      "max_permissible_speed": 130
+    },
+    {
+      "section_id": "SEC_BKO_CNB_DN",
+      "division": "Prayagraj (NCR)",
+      "name": "Bindki Road - Kanpur Central (DOWN)",
+      "line_type": "DN_MAIN",
+      "start_km": 977.3,
+      "end_km": 1018.0,
+      "traffic_density_gmt": 140.0,
+      "max_permissible_speed": 130
     }
   ],
   "tasks": [
@@ -97,11 +177,11 @@
       "section_id": "SEC_SFG_MRE_UP",
       "asset_id": "RAIL_KM_838_WELD",
       "title": "Thermite Weld Fracture Repair",
-      "description": "USFD flaw detector detected severe weld defect at Km 838/12. Imposed temporary 30 km/h caution order.",
+      "description": "USFD flaw detector detected severe weld defect at Km 838/12 on UP line. Imposed temporary 30 km/h caution order.",
       "severity": "EMERGENCY",
       "min_duration_minutes": 120,
-      "reported_date": "2026-10-18",
-      "due_date": "2026-10-21",
+      "reported_date": "2026-10-23",
+      "due_date": "2026-10-26",
       "days_overdue": 1,
       "is_statutory": false,
       "requires_power_block": false,
@@ -124,11 +204,11 @@
       "section_id": "SEC_MRE_BRE_UP",
       "asset_id": "TRACK_KM_852_TAMP",
       "title": "CSM Machine Track Tamping",
-      "description": "High unevenness standard deviation recorded by OMS car. Tamping required to restore 130 km/h runnability.",
+      "description": "High unevenness standard deviation recorded by OMS car on UP Main. Tamping required to restore 130 km/h runnability.",
       "severity": "CRITICAL",
       "min_duration_minutes": 150,
-      "reported_date": "2026-10-15",
-      "due_date": "2026-10-22",
+      "reported_date": "2026-10-20",
+      "due_date": "2026-10-27",
       "days_overdue": 0,
       "is_statutory": true,
       "requires_power_block": false,
@@ -148,14 +228,14 @@
       "task_id": "ENG_003",
       "department": "ENGINEERING",
       "source_system": "TMS",
-      "section_id": "SEC_SRO_KGA_UP",
+      "section_id": "SEC_SRO_KGA_DN",
       "asset_id": "SWITCH_KM_902_SEJ",
       "title": "Switch Expansion Joint (SEJ) Replacement",
-      "description": "Tongue rail gap exceeded tolerance limits at Km 902/4. Potential wheel climbing hazard.",
+      "description": "Tongue rail gap exceeded tolerance limits at Km 902/4 on DOWN Main. Potential wheel climbing hazard.",
       "severity": "CRITICAL",
       "min_duration_minutes": 120,
-      "reported_date": "2026-10-16",
-      "due_date": "2026-10-21",
+      "reported_date": "2026-10-21",
+      "due_date": "2026-10-26",
       "days_overdue": 2,
       "is_statutory": false,
       "requires_power_block": false,
@@ -169,7 +249,7 @@
         "statutory_compliance": 0.0,
         "speed_restriction_penalty": 10.0
       },
-      "rationale": "Priority 57.0/100: Driven by critical asset condition, active caution order imposing 50 km/h delay, 2 days past regulatory due date, located on high-density line (Sirathu - Khaga (UP))."
+      "rationale": "Priority 57.0/100: Driven by critical asset condition, active caution order imposing 50 km/h delay, 2 days past regulatory due date, located on high-density line (Sirathu - Khaga (DOWN))."
     },
     {
       "task_id": "ENG_004",
@@ -178,11 +258,11 @@
       "section_id": "SEC_FTP_BKO_UP",
       "asset_id": "SLEEPER_KM_960",
       "title": "Casual Sleeper Renewal & Fastening",
-      "description": "Cracked PSC sleepers requiring replacement and ERC clip tensioning.",
+      "description": "Cracked PSC sleepers requiring replacement and ERC clip tensioning on UP line.",
       "severity": "ROUTINE",
       "min_duration_minutes": 90,
-      "reported_date": "2026-10-12",
-      "due_date": "2026-10-25",
+      "reported_date": "2026-10-17",
+      "due_date": "2026-10-30",
       "days_overdue": 0,
       "is_statutory": false,
       "requires_power_block": false,
@@ -202,14 +282,14 @@
       "task_id": "ENG_005",
       "department": "ENGINEERING",
       "source_system": "TMS",
-      "section_id": "SEC_BKO_CNB_UP",
+      "section_id": "SEC_BKO_CNB_DN",
       "asset_id": "DEEP_SCREEN_KM_995",
       "title": "BCM Ballast Deep Screening",
-      "description": "Caked ballast causing poor track drainage and pumping joints.",
+      "description": "Caked ballast causing poor track drainage and pumping joints on DOWN Main.",
       "severity": "ROUTINE",
       "min_duration_minutes": 180,
-      "reported_date": "2026-10-06",
-      "due_date": "2026-10-27",
+      "reported_date": "2026-10-11",
+      "due_date": "2026-11-01",
       "days_overdue": 0,
       "is_statutory": true,
       "requires_power_block": false,
@@ -223,7 +303,7 @@
         "statutory_compliance": 15.0,
         "speed_restriction_penalty": 0.0
       },
-      "rationale": "Priority 39.0/100: Driven by mandatory statutory inspection cycle, located on high-density line (Bindki Road - Kanpur Central (UP))."
+      "rationale": "Priority 39.0/100: Driven by mandatory statutory inspection cycle, located on high-density line (Bindki Road - Kanpur Central (DOWN))."
     },
     {
       "task_id": "TRD_001",
@@ -232,11 +312,11 @@
       "section_id": "SEC_SFG_MRE_UP",
       "asset_id": "OHE_MAST_839_CANTILEVER",
       "title": "OHE Cantilever Adjustment & Stagger Check",
-      "description": "Contact wire stagger deviation detected at Mast 839/14. Risk of pantograph entanglement on high-speed Rajdhani rakes.",
+      "description": "Contact wire stagger deviation detected at Mast 839/14 on UP line. Risk of pantograph entanglement on high-speed Rajdhani rakes.",
       "severity": "CRITICAL",
       "min_duration_minutes": 90,
-      "reported_date": "2026-10-17",
-      "due_date": "2026-10-21",
+      "reported_date": "2026-10-22",
+      "due_date": "2026-10-26",
       "days_overdue": 1,
       "is_statutory": true,
       "requires_power_block": true,
@@ -259,11 +339,11 @@
       "section_id": "SEC_MRE_BRE_UP",
       "asset_id": "OHE_INSULATOR_KM_854",
       "title": "High-Voltage Insulator Washing & Thermal Scan",
-      "description": "Severe dust/fog pollution deposit on 25kV bracket insulators. Thermo-vision scan showed hotspot.",
+      "description": "Severe dust/fog pollution deposit on 25kV bracket insulators on UP Main. Thermo-vision scan showed hotspot.",
       "severity": "CRITICAL",
       "min_duration_minutes": 100,
-      "reported_date": "2026-10-16",
-      "due_date": "2026-10-22",
+      "reported_date": "2026-10-21",
+      "due_date": "2026-10-27",
       "days_overdue": 0,
       "is_statutory": false,
       "requires_power_block": true,
@@ -283,14 +363,14 @@
       "task_id": "TRD_003",
       "department": "TRD",
       "source_system": "TDMS",
-      "section_id": "SEC_SRO_KGA_UP",
+      "section_id": "SEC_SRO_KGA_DN",
       "asset_id": "OHE_NEUTRAL_SEC_905",
       "title": "PTFE Neutral Section Overhaul",
-      "description": "Arcing horn wear at neutral section assembly Km 905. Tower wagon needed.",
+      "description": "Arcing horn wear at neutral section assembly Km 905 on DOWN Main. Tower wagon needed.",
       "severity": "EMERGENCY",
       "min_duration_minutes": 110,
-      "reported_date": "2026-10-19",
-      "due_date": "2026-10-21",
+      "reported_date": "2026-10-24",
+      "due_date": "2026-10-26",
       "days_overdue": 0,
       "is_statutory": true,
       "requires_power_block": true,
@@ -304,7 +384,7 @@
         "statutory_compliance": 15.0,
         "speed_restriction_penalty": 0.0
       },
-      "rationale": "Priority 67.0/100: Driven by immediate safety risk (Emergency IOM), mandatory statutory inspection cycle, located on high-density line (Sirathu - Khaga (UP))."
+      "rationale": "Priority 67.0/100: Driven by immediate safety risk (Emergency IOM), mandatory statutory inspection cycle, located on high-density line (Sirathu - Khaga (DOWN))."
     },
     {
       "task_id": "TRD_004",
@@ -313,11 +393,11 @@
       "section_id": "SEC_KGA_FTP_UP",
       "asset_id": "OHE_DROPPER_KM_930",
       "title": "Current Carrying Dropper Replacement",
-      "description": "Multiple loose droppers causing sag in contact wire profile.",
+      "description": "Multiple loose droppers causing sag in contact wire profile on UP line.",
       "severity": "ROUTINE",
       "min_duration_minutes": 80,
-      "reported_date": "2026-10-10",
-      "due_date": "2026-10-26",
+      "reported_date": "2026-10-15",
+      "due_date": "2026-10-31",
       "days_overdue": 0,
       "is_statutory": false,
       "requires_power_block": true,
@@ -340,11 +420,11 @@
       "section_id": "SEC_SFG_MRE_UP",
       "asset_id": "POINT_MRE_102B",
       "title": "Point Machine Overhaul & Detection Contact Setting",
-      "description": "Point Machine 102B showing intermittent out-of-correspondence alarms during route setting.",
+      "description": "Point Machine 102B showing intermittent out-of-correspondence alarms during route setting on UP Main.",
       "severity": "CRITICAL",
       "min_duration_minutes": 80,
-      "reported_date": "2026-10-18",
-      "due_date": "2026-10-21",
+      "reported_date": "2026-10-23",
+      "due_date": "2026-10-26",
       "days_overdue": 1,
       "is_statutory": true,
       "requires_power_block": false,
@@ -367,11 +447,11 @@
       "section_id": "SEC_MRE_BRE_UP",
       "asset_id": "AXLE_COUNTER_BRE_UP",
       "title": "Digital Axle Counter (DAC) Sensor Recalibration",
-      "description": "Wheel detector sensor amplitude variation flagged by diagnostic data logger.",
+      "description": "Wheel detector sensor amplitude variation flagged by diagnostic data logger on UP line.",
       "severity": "ROUTINE",
       "min_duration_minutes": 60,
-      "reported_date": "2026-10-14",
-      "due_date": "2026-10-24",
+      "reported_date": "2026-10-19",
+      "due_date": "2026-10-29",
       "days_overdue": 0,
       "is_statutory": true,
       "requires_power_block": false,
@@ -391,14 +471,14 @@
       "task_id": "SNT_003",
       "department": "ST",
       "source_system": "SMMS",
-      "section_id": "SEC_SRO_KGA_UP",
+      "section_id": "SEC_SRO_KGA_DN",
       "asset_id": "TRACK_CIRCUIT_SRO_2T",
       "title": "DC Track Circuit Boot-leg & Choke Replacement",
-      "description": "Drop in ballast resistance during dew hours causing track circuit bobbing.",
+      "description": "Drop in ballast resistance during dew hours causing track circuit bobbing on DOWN line.",
       "severity": "CRITICAL",
       "min_duration_minutes": 75,
-      "reported_date": "2026-10-17",
-      "due_date": "2026-10-22",
+      "reported_date": "2026-10-22",
+      "due_date": "2026-10-27",
       "days_overdue": 0,
       "is_statutory": false,
       "requires_power_block": false,
@@ -412,20 +492,20 @@
         "statutory_compliance": 0.0,
         "speed_restriction_penalty": 0.0
       },
-      "rationale": "Priority 37.0/100: Driven by critical asset condition, located on high-density line (Sirathu - Khaga (UP))."
+      "rationale": "Priority 37.0/100: Driven by critical asset condition, located on high-density line (Sirathu - Khaga (DOWN))."
     },
     {
       "task_id": "SNT_004",
       "department": "ST",
       "source_system": "SMMS",
-      "section_id": "SEC_BKO_CNB_UP",
-      "asset_id": "SIGNAL_CNB_HOME_UP",
+      "section_id": "SEC_BKO_CNB_DN",
+      "asset_id": "SIGNAL_CNB_HOME_DN",
       "title": "LED Signal Aspect Replacement & Cable Meggering",
-      "description": "Red aspect current leakage in electronic interlocking panel.",
+      "description": "Red aspect current leakage in electronic interlocking panel on DOWN Home Signal.",
       "severity": "EMERGENCY",
       "min_duration_minutes": 60,
-      "reported_date": "2026-10-19",
-      "due_date": "2026-10-21",
+      "reported_date": "2026-10-24",
+      "due_date": "2026-10-26",
       "days_overdue": 0,
       "is_statutory": true,
       "requires_power_block": false,
@@ -439,1502 +519,1313 @@
         "statutory_compliance": 15.0,
         "speed_restriction_penalty": 0.0
       },
-      "rationale": "Priority 69.0/100: Driven by immediate safety risk (Emergency IOM), mandatory statutory inspection cycle, located on high-density line (Bindki Road - Kanpur Central (UP))."
-    },
-    {
-      "task_id": "ENG_EMERGENCY_TEST",
-      "department": "ENGINEERING",
-      "source_system": "TMS",
-      "section_id": "SEC_SFG_MRE_UP",
-      "asset_id": "RAIL_KM_839_BROKEN",
-      "title": "Broken Rail on Up Main",
-      "description": "Severe weld fracture",
-      "severity": "EMERGENCY",
-      "min_duration_minutes": 120,
-      "reported_date": "2026-10-20",
-      "due_date": "2026-10-21",
-      "days_overdue": 1,
-      "is_statutory": true,
-      "requires_power_block": false,
-      "requires_traffic_block": true,
-      "speed_restriction": "30 km/h",
-      "priority_score": 82.5,
-      "score_factors": {
-        "safety_severity": 40.0,
-        "overdue_days": 5.0,
-        "corridor_density": 12.5,
-        "statutory_compliance": 15.0,
-        "speed_restriction_penalty": 10.0
-      },
-      "rationale": "Priority 82.5/100: Driven by immediate safety risk (Emergency IOM), active caution order imposing 30 km/h delay, 1 days past regulatory due date, mandatory statutory inspection cycle, located on high-density line (Subedarganj - Manauri (UP))."
-    },
-    {
-      "task_id": "ENG_EMERGENCY_RAIL_CRACK",
-      "department": "ENGINEERING",
-      "source_system": "TMS",
-      "section_id": "SEC_SFG_MRE_UP",
-      "asset_id": "RAIL_KM_839_CRACK",
-      "title": "Emergency Rail Flaw Fracture at Km 839",
-      "description": "USFD detected transverse fracture on Up Main line. Immediate 30 km/h caution order imposed.",
-      "severity": "EMERGENCY",
-      "min_duration_minutes": 120,
-      "reported_date": "2026-10-24",
-      "due_date": "2026-10-25",
-      "days_overdue": 1,
-      "is_statutory": true,
-      "requires_power_block": false,
-      "requires_traffic_block": true,
-      "speed_restriction": "30 km/h",
-      "priority_score": 82.5,
-      "score_factors": {
-        "safety_severity": 40.0,
-        "overdue_days": 5.0,
-        "corridor_density": 12.5,
-        "statutory_compliance": 15.0,
-        "speed_restriction_penalty": 10.0
-      },
-      "rationale": "Priority 82.5/100: Driven by immediate safety risk (Emergency IOM), active caution order imposing 30 km/h delay, 1 days past regulatory due date, mandatory statutory inspection cycle, located on high-density line (Subedarganj - Manauri (UP))."
-    },
-    {
-      "task_id": "TASK_INTEGRATED_SHADOW_BLOCK_5602",
-      "department": "ENGINEERING",
-      "source_system": "TMS",
-      "section_id": "SEC_BRE_SRO_UP",
-      "asset_id": "CORRIDOR_SEC_BRE_SRO_UP_KM_POST",
-      "title": "Scheduled Integrated Shadow Block: Corridor Renewal",
-      "description": "Midday freight slot integrated shadow block between morning and evening express trains.",
-      "severity": "CRITICAL",
-      "min_duration_minutes": 120,
-      "reported_date": "2026-10-20",
-      "due_date": "2026-10-20",
-      "days_overdue": 0,
-      "is_statutory": true,
-      "requires_power_block": true,
-      "requires_traffic_block": true,
-      "speed_restriction": null,
-      "priority_score": 52.8,
-      "score_factors": {
-        "safety_severity": 25.0,
-        "overdue_days": 0.0,
-        "corridor_density": 12.8,
-        "statutory_compliance": 15.0,
-        "speed_restriction_penalty": 0.0
-      },
-      "rationale": "Priority 52.8/100: Driven by critical asset condition, mandatory statutory inspection cycle, located on high-density line (Bharwari - Sirathu (UP))."
-    },
-    {
-      "task_id": "TASK_INTEGRATED_SHADOW_BLOCK_5656",
-      "department": "ENGINEERING",
-      "source_system": "TMS",
-      "section_id": "SEC_BRE_SRO_UP",
-      "asset_id": "CORRIDOR_SEC_BRE_SRO_UP_KM_POST",
-      "title": "Scheduled Integrated Shadow Block: Corridor Renewal",
-      "description": "Midday freight slot integrated shadow block between morning and evening express trains.",
-      "severity": "CRITICAL",
-      "min_duration_minutes": 120,
-      "reported_date": "2026-10-25",
-      "due_date": "2026-10-25",
-      "days_overdue": 0,
-      "is_statutory": true,
-      "requires_power_block": true,
-      "requires_traffic_block": true,
-      "speed_restriction": null,
-      "priority_score": 52.8,
-      "score_factors": {
-        "safety_severity": 25.0,
-        "overdue_days": 0.0,
-        "corridor_density": 12.8,
-        "statutory_compliance": 15.0,
-        "speed_restriction_penalty": 0.0
-      },
-      "rationale": "Priority 52.8/100: Driven by critical asset condition, mandatory statutory inspection cycle, located on high-density line (Bharwari - Sirathu (UP))."
-    },
-    {
-      "task_id": "TASK_MEGA_BLOCK_2457",
-      "department": "ENGINEERING",
-      "source_system": "TMS",
-      "section_id": "SEC_PRG_SFG_UP",
-      "asset_id": "CORRIDOR_SEC_PRG_SFG_UP_KM_POST",
-      "title": "Scheduled Mega Block: Corridor Renewal",
-      "description": "Advance Mega Block for corridor maintenance",
-      "severity": "CRITICAL",
-      "min_duration_minutes": 120,
-      "reported_date": "2026-10-25",
-      "due_date": "2026-10-25",
-      "days_overdue": 0,
-      "is_statutory": true,
-      "requires_power_block": true,
-      "requires_traffic_block": true,
-      "speed_restriction": null,
-      "priority_score": 51.5,
-      "score_factors": {
-        "safety_severity": 25.0,
-        "overdue_days": 0.0,
-        "corridor_density": 11.5,
-        "statutory_compliance": 15.0,
-        "speed_restriction_penalty": 0.0
-      },
-      "rationale": "Priority 51.5/100: Driven by critical asset condition, mandatory statutory inspection cycle, located on high-density line (Prayagraj Jn - Subedarganj (UP))."
-    },
-    {
-      "task_id": "TASK_EMG_9843",
-      "department": "ENGINEERING",
-      "source_system": "TMS_EMERGENCY_FEED",
-      "section_id": "SEC_PRG_CNB_02",
-      "asset_id": "RAIL_KM_1018_UP",
-      "title": "Immediate Rail Fracture & Weld Flaw Detected",
-      "description": "Ultrasonic flaw testing (USFD) detected critical weld separation requiring emergency fish-plating and tamping.",
-      "severity": "EMERGENCY",
-      "min_duration_minutes": 60,
-      "reported_date": "2026-10-24 22:07",
-      "due_date": "2026-10-24 22:07",
-      "days_overdue": 3,
-      "is_statutory": true,
-      "requires_power_block": false,
-      "requires_traffic_block": true,
-      "speed_restriction": "20 kmph emergency restriction",
-      "priority_score": 88.0,
-      "score_factors": {
-        "safety_severity": 40.0,
-        "overdue_days": 15.0,
-        "corridor_density": 8.0,
-        "statutory_compliance": 15.0,
-        "speed_restriction_penalty": 10.0
-      },
-      "rationale": "Priority 88.0/100: Driven by immediate safety risk (Emergency IOM), active caution order imposing 20 kmph emergency restriction delay, 3 days past regulatory due date, mandatory statutory inspection cycle, located on high-density line (SEC_PRG_CNB_02)."
+      "rationale": "Priority 69.0/100: Driven by immediate safety risk (Emergency IOM), mandatory statutory inspection cycle, located on high-density line (Bindki Road - Kanpur Central (DOWN))."
     }
   ],
   "windows": [
     {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261020_0130",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261020_0130",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261020_1130",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261020_1130",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261020_1500",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261020_1500",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261020_0130",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261020_0130",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261020_1130",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261020_1130",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261020_1500",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261020_1500",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261020_0130",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261020_0130",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261020_1130",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261020_1130",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261020_1500",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261020_1500",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261020_0130",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261020_0130",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261020_1130",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261020_1130",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261020_1500",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261020_1500",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261020_0130",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261020_0130",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261020_1130",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261020_1130",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261020_1500",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261020_1500",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261020_0130",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261020_0130",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261020_1130",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261020_1130",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261020_1500",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261020_1500",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261020_0130",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261020_0130",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261020_1130",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261020_1130",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261020_1500",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261020_1500",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261020_0130",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261020_0130",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-20 01:30",
-      "end_time": "2026-10-20 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261020_1130",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261020_1130",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-20 11:30",
-      "end_time": "2026-10-20 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261020_1500",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261020_1500",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-20 15:00",
-      "end_time": "2026-10-20 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261021_0130",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261021_0130",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261021_1130",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261021_1130",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261021_1500",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261021_1500",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261021_0130",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261021_0130",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261021_1130",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261021_1130",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261021_1500",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261021_1500",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261021_0130",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261021_0130",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261021_1130",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261021_1130",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261021_1500",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261021_1500",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261021_0130",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261021_0130",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261021_1130",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261021_1130",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261021_1500",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261021_1500",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261021_0130",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261021_0130",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261021_1130",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261021_1130",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261021_1500",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261021_1500",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261021_0130",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261021_0130",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261021_1130",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261021_1130",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261021_1500",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261021_1500",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261021_0130",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261021_0130",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261021_1130",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261021_1130",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261021_1500",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261021_1500",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261021_0130",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261021_0130",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-21 01:30",
-      "end_time": "2026-10-21 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261021_1130",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261021_1130",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-21 11:30",
-      "end_time": "2026-10-21 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261021_1500",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261021_1500",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-21 15:00",
-      "end_time": "2026-10-21 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261022_0130",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261022_0130",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261022_1130",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261022_1130",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_UP_20261022_1500",
-      "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_PRG_SFG_DN_20261022_1500",
-      "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261022_0130",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261022_0130",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261022_1130",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261022_1130",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_UP_20261022_1500",
-      "section_id": "SEC_SFG_MRE_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SFG_MRE_DN_20261022_1500",
-      "section_id": "SEC_SFG_MRE_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261022_0130",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261022_0130",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261022_1130",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261022_1130",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_UP_20261022_1500",
-      "section_id": "SEC_MRE_BRE_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_MRE_BRE_DN_20261022_1500",
-      "section_id": "SEC_MRE_BRE_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261022_0130",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261022_0130",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261022_1130",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261022_1130",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_UP_20261022_1500",
-      "section_id": "SEC_BRE_SRO_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BRE_SRO_DN_20261022_1500",
-      "section_id": "SEC_BRE_SRO_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261022_0130",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261022_0130",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261022_1130",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261022_1130",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_UP_20261022_1500",
-      "section_id": "SEC_SRO_KGA_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_SRO_KGA_DN_20261022_1500",
-      "section_id": "SEC_SRO_KGA_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261022_0130",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261022_0130",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261022_1130",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261022_1130",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_UP_20261022_1500",
-      "section_id": "SEC_KGA_FTP_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_KGA_FTP_DN_20261022_1500",
-      "section_id": "SEC_KGA_FTP_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261022_0130",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261022_0130",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261022_1130",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261022_1130",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_UP_20261022_1500",
-      "section_id": "SEC_FTP_BKO_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_FTP_BKO_DN_20261022_1500",
-      "section_id": "SEC_FTP_BKO_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261022_0130",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261022_0130",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-22 01:30",
-      "end_time": "2026-10-22 04:30",
-      "duration_minutes": 180,
-      "window_type": "NIGHT_LULL",
-      "impact_score": 0.8
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261022_1130",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261022_1130",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-22 11:30",
-      "end_time": "2026-10-22 13:45",
-      "duration_minutes": 135,
-      "window_type": "MIDDAY_GOODS_GAP",
-      "impact_score": 1.4
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_UP_20261022_1500",
-      "section_id": "SEC_BKO_CNB_UP",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_SEC_BKO_CNB_DN_20261022_1500",
-      "section_id": "SEC_BKO_CNB_DN",
-      "start_time": "2026-10-22 15:00",
-      "end_time": "2026-10-22 17:00",
-      "duration_minutes": 120,
-      "window_type": "AFTERNOON_GAP",
-      "impact_score": 2.2
-    },
-    {
-      "window_id": "WIN_ADVANCE_SEC_PRG_SFG_UP_20261024_212457",
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261025_0130",
       "section_id": "SEC_PRG_SFG_UP",
       "start_time": "2026-10-25 01:30",
-      "end_time": "2026-10-25 03:30",
-      "duration_minutes": 120,
-      "window_type": "MEGA_BLOCK",
-      "impact_score": 0.9
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
     },
     {
-      "window_id": "WIN_ADVANCE_SEC_PRG_SFG_DN_20261024_212457",
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261025_0130",
       "section_id": "SEC_PRG_SFG_DN",
       "start_time": "2026-10-25 01:30",
-      "end_time": "2026-10-25 03:30",
-      "duration_minutes": 120,
-      "window_type": "MEGA_BLOCK",
-      "impact_score": 0.9
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
     },
     {
-      "window_id": "WIN_ADVANCE_SEC_PRG_SFG_UP_20261024_220523",
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261025_1130",
       "section_id": "SEC_PRG_SFG_UP",
-      "start_time": "2026-10-24 22:30",
-      "end_time": "2026-10-25 03:30",
-      "duration_minutes": 300,
-      "window_type": "MEGA_BLOCK",
-      "impact_score": 1.5
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
     },
     {
-      "window_id": "WIN_ADVANCE_SEC_PRG_SFG_DN_20261024_220523",
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261025_1130",
       "section_id": "SEC_PRG_SFG_DN",
-      "start_time": "2026-10-24 22:30",
-      "end_time": "2026-10-25 03:30",
-      "duration_minutes": 300,
-      "window_type": "MEGA_BLOCK",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261025_1500",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261025_1500",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261025_0130",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261025_0130",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261025_1130",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261025_1130",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261025_1500",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261025_1500",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261025_0130",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261025_0130",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261025_1130",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261025_1130",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261025_1500",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261025_1500",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261025_0130",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261025_0130",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261025_1130",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261025_1130",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261025_1500",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261025_1500",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261025_0130",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261025_0130",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261025_1130",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261025_1130",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261025_1500",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261025_1500",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261025_0130",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261025_0130",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261025_1130",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261025_1130",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261025_1500",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261025_1500",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261025_0130",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261025_0130",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261025_1130",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261025_1130",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261025_1500",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261025_1500",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261025_0130",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261025_0130",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-25 01:30",
+      "end_time": "2026-10-25 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261025_1130",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261025_1130",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-25 11:30",
+      "end_time": "2026-10-25 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261025_1500",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261025_1500",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-25 15:00",
+      "end_time": "2026-10-25 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261026_0130",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261026_0130",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261026_1130",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261026_1130",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261026_1500",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261026_1500",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261026_0130",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261026_0130",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261026_1130",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261026_1130",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261026_1500",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261026_1500",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261026_0130",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261026_0130",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261026_1130",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261026_1130",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261026_1500",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261026_1500",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261026_0130",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261026_0130",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261026_1130",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261026_1130",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261026_1500",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261026_1500",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261026_0130",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261026_0130",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261026_1130",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261026_1130",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261026_1500",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261026_1500",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261026_0130",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261026_0130",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261026_1130",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261026_1130",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261026_1500",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261026_1500",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261026_0130",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261026_0130",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261026_1130",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261026_1130",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261026_1500",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261026_1500",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261026_0130",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261026_0130",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-26 01:30",
+      "end_time": "2026-10-26 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261026_1130",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261026_1130",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261026_1500",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261026_1500",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-26 15:00",
+      "end_time": "2026-10-26 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261027_0130",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261027_0130",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261027_1130",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261027_1130",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_UP_20261027_1500",
+      "section_id": "SEC_PRG_SFG_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_PRG_SFG_DN_20261027_1500",
+      "section_id": "SEC_PRG_SFG_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261027_0130",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261027_0130",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261027_1130",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261027_1130",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_UP_20261027_1500",
+      "section_id": "SEC_SFG_MRE_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SFG_MRE_DN_20261027_1500",
+      "section_id": "SEC_SFG_MRE_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261027_0130",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261027_0130",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261027_1130",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261027_1130",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_UP_20261027_1500",
+      "section_id": "SEC_MRE_BRE_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_MRE_BRE_DN_20261027_1500",
+      "section_id": "SEC_MRE_BRE_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261027_0130",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261027_0130",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261027_1130",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261027_1130",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_UP_20261027_1500",
+      "section_id": "SEC_BRE_SRO_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BRE_SRO_DN_20261027_1500",
+      "section_id": "SEC_BRE_SRO_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261027_0130",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261027_0130",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261027_1130",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261027_1130",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_UP_20261027_1500",
+      "section_id": "SEC_SRO_KGA_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_SRO_KGA_DN_20261027_1500",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261027_0130",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261027_0130",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261027_1130",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261027_1130",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_UP_20261027_1500",
+      "section_id": "SEC_KGA_FTP_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_KGA_FTP_DN_20261027_1500",
+      "section_id": "SEC_KGA_FTP_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261027_0130",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261027_0130",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261027_1130",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261027_1130",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_UP_20261027_1500",
+      "section_id": "SEC_FTP_BKO_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_FTP_BKO_DN_20261027_1500",
+      "section_id": "SEC_FTP_BKO_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261027_0130",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261027_0130",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-27 01:30",
+      "end_time": "2026-10-27 04:30",
+      "duration_minutes": 180,
+      "window_type": "NIGHT_LULL",
+      "impact_score": 0.8
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261027_1130",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261027_1130",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-27 11:30",
+      "end_time": "2026-10-27 13:45",
+      "duration_minutes": 135,
+      "window_type": "MIDDAY_GOODS_GAP",
+      "impact_score": 1.4
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_UP_20261027_1500",
+      "section_id": "SEC_BKO_CNB_UP",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_SEC_BKO_CNB_DN_20261027_1500",
+      "section_id": "SEC_BKO_CNB_DN",
+      "start_time": "2026-10-27 15:00",
+      "end_time": "2026-10-27 17:00",
+      "duration_minutes": 120,
+      "window_type": "AFTERNOON_GAP",
+      "impact_score": 2.2
+    },
+    {
+      "window_id": "WIN_ADVANCE_SEC_SRO_KGA_DN_20261025_231916",
+      "section_id": "SEC_SRO_KGA_DN",
+      "start_time": "2026-10-26 11:30",
+      "end_time": "2026-10-26 13:30",
+      "duration_minutes": 120,
+      "window_type": "INTEGRATED_SHADOW_BLOCK",
       "impact_score": 1.5
     }
   ]
